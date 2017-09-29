@@ -1,0 +1,14 @@
+#/bin/bash
+
+# In gnome-terminal, go to Edit -> Profile Preferences -> Title. Click the Command tab. Select Hold the terminal from the drop-down menu labelled When command exits. Name the profile hold-terminal
+
+AVD_NAME=$1
+
+~/Android/Sdk/emulator/emulator -avd ${AVD_NAME:-status} & #-wipe-data &
+
+./status1.sh
+gnome-terminal -e "bash -c './status2.sh'"
+gnome-terminal -e "bash -c './status3.sh'"
+gnome-terminal -e "bash -c 'cd ~/status-react; adb logcat'"
+
+echo "EVERYTHING IS STARTED YOU CAN CLOSE THIS TERMINAL"
