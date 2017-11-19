@@ -101,3 +101,7 @@ export ANDROID_HOME=$HOME/Android/Sdk
 export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
 export JAVA_HOME=/usr/lib/jvm/java-1.8.0
 export PATH=$PATH:$JAVA_HOME/bin
+export ANDROID_NDK_HOME=$HOME/android-ndk
+
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
