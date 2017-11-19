@@ -366,6 +366,7 @@ you should place your code here."
               (lambdawerk-indent)
               (add-hook 'before-save-hook 'lambdawerk-cleanup-buffer t t)))
   (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
+  (define-key global-map (kbd "M-f") 'helm-projectile-ag)
   (define-key smartparens-mode-map (kbd "C-<right>") 'sp-forward-slurp-sexp)
   (define-key smartparens-mode-map (kbd "C-<left>") 'sp-forward-barf-sexp)
   (define-key smartparens-mode-map (kbd "C-k") 'sp-kill-sexp)
