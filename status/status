@@ -2,13 +2,38 @@
 
 # In gnome-terminal, go to Edit -> Profile Preferences -> Title. Click the Command tab. Select Hold the terminal from the drop-down menu labelled When command exits. Name the profile hold-terminal
 
+echo "Starting Android Emulator"
 AVD_NAME=$1
 
-~/Android/Sdk/emulator/emulator -avd ${AVD_NAME:-status} & #-wipe-data &
+~/Android/Sdk/emulator/emulator -avd ${AVD_NAME:-status} -wipe-data &
 
-./status1.sh
-gnome-terminal -e "bash -c './status2.sh'"
-gnome-terminal -e "bash -c './status3.sh'"
+cd status-react
+
+echo "Cleaning up..."
+rm -rf node_modules
+rm package-lock.json
+lein clean
+
+echo "Installing dependencies..."
+lein deps
+npm install
+./re-natal enable-source-maps
+
+# lein prod-build
+
+echo "Setting up..."
+./re-natal use-android-device avd
+./re-natal use-figwheel
+lein re-frisk use-re-natal
+adb reverse tcp:8081 tcp:8081
+adb reverse tcp:3449 tcp:3449
+adb reverse tcp:4567 tcp:4567
+
+react-native run-android
+react-native start &
+
+echo "Running logcat in new terminal..."
 gnome-terminal -e "bash -c 'cd ~/status-react; adb logcat'"
 
-echo "EVERYTHING IS STARTED YOU CAN CLOSE THIS TERMINAL"
+echo "Running repl"
+lein repl
