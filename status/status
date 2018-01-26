@@ -29,11 +29,19 @@ adb reverse tcp:8081 tcp:8081
 adb reverse tcp:3449 tcp:3449
 adb reverse tcp:4567 tcp:4567
 
+echo "Running run-android command"
 react-native run-android
+
+echo "Running react-native-start command"
 react-native start &
 
-echo "Running logcat in new terminal..."
-gnome-terminal -e "bash -c 'cd ~/status-react; adb logcat'"
+#echo "Running logcat in new terminal..."
+#gnome-terminal -e "bash -c 'cd ~/status-react; adb logcat'"
 
-echo "Running repl"
-lein repl
+#echo "Running repl"
+#lein repl
+
+
+
+# prod build
+# lein clean; lein prod-build; cd android; ./gradlew assembleRelease

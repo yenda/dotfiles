@@ -104,4 +104,5 @@ export PATH=$PATH:$JAVA_HOME/bin
 export ANDROID_NDK_HOME=$HOME/android-ndk
 
 export GOPATH=$HOME/go
-export PATH=$PATH:$GOPATH/bin
+export STATUS_REACT_HOME=$HOME/status-react
+export STATUS_GO_HOME=$GOPATH/src/github.com/status-im/status-go
