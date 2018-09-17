@@ -20,3 +20,7 @@ generate-ssh-key(){
   ssh-add ~/.ssh/$1
   xclip -selection clipboard < ~/.ssh/$1.pub
 }
+
+killnode(){
+  lsof -i :8081 | awk 'NR!=1 {print $2}' | xargs kill
+}

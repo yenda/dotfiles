@@ -1,47 +1,26 @@
 #/bin/bash
 
+# kill dev server 
+lsof -i :8081 | awk 'NR!=1 {print $2}' | xargs kill
+
 # In gnome-terminal, go to Edit -> Profile Preferences -> Title. Click the Command tab. Select Hold the terminal from the drop-down menu labelled When command exits. Name the profile hold-terminal
 
 echo "Starting Android Emulator"
 AVD_NAME=$1
 
-~/Android/Sdk/emulator/emulator -avd ${AVD_NAME:-status} -wipe-data &
+~/Android/Sdk/emulator/emulator -avd ${AVD_NAME:-wallet} -wipe-data &
 
 cd status-react
 
 echo "Cleaning up..."
-rm -rf node_modules
+#_ rm -rf node_modules
 rm package-lock.json
+rm -rf target
+rm index.android.js
 lein clean
 
-echo "Installing dependencies..."
-lein deps
-npm install
-./re-natal enable-source-maps
+make startdev-android-avd
 
-# lein prod-build
-
-echo "Setting up..."
-./re-natal use-android-device avd
-./re-natal use-figwheel
-lein re-frisk use-re-natal
-adb reverse tcp:8081 tcp:8081
-adb reverse tcp:3449 tcp:3449
-adb reverse tcp:4567 tcp:4567
-
-echo "Running run-android command"
-react-native run-android
-
-echo "Running react-native-start command"
-react-native start &
-
-#echo "Running logcat in new terminal..."
-#gnome-terminal -e "bash -c 'cd ~/status-react; adb logcat'"
-
-#echo "Running repl"
-#lein repl
-
-
-
-# prod build
-# lein clean; lein prod-build; cd android; ./gradlew assembleRelease
+echo "you can now use M-x cider-connect-clojurescript to connect to the repl"
+echo "in the repl use '(figwheel-sidecar.repl-api/cljs-repl)' to open a cljs-repl"
+# (figwheel-sidecar.repl-api/cljs-repl)

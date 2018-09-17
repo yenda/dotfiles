@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     octave
      ruby
      csv
      javascript
@@ -142,7 +143,7 @@ values."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 14
+                               :size 20
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -342,15 +343,18 @@ you should place your code here."
             (lambda ()
               (put-clojure-indent 'letsubs 1)
               (put-clojure-indent 'create-class 0)
-              (put-clojure-indent 'register-handler-db 0)
-              (put-clojure-indent 'register-handler-fx 0)
-              (put-clojure-indent 'register-handler 0)
-              (put-clojure-indent 'reg-fx 0)
-              (put-clojure-indent 'reg-sub 1)
-              (put-clojure-indent 'allowed-keys 0)
+              (put-clojure-indent 'register-handler-db -1)
+              (put-clojure-indent 'create-class -1)
+              (put-clojure-indent 'register-handler-fx -1)
+              (put-clojure-indent 'register-handler -1)
+              (put-clojure-indent 'reg-fx -1)
+              (put-clojure-indent 'reg-cofx -1)
+              (put-clojure-indent 'reg-sub -1)
+              (put-clojure-indent 'allowed-keys -1)
               (put-clojure-indent 'start 0)
               (put-clojure-indent 'list-item 0)
               (put-clojure-indent 'setTimeout 0)
+              (put-clojure-indent 'set-timeout 0)
               (put-clojure-indent 'run-test-sync 0)
               (put-clojure-indent 'keep 0)
               (put-clojure-indent 'status/move-to-internal-storage 0)
