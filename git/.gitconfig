@@ -1,3 +1,6 @@
 [user]
-	email = eric@dvorsak.fr
-	name = Eric Dvorsak
+	email = eric@status.im 
+	name = yenda
+	signingkey = 0095623C0069DCE6
+[commit]
+    gpgsign = true

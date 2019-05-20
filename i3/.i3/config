@@ -1,32 +1,40 @@
 set $mod Mod4
 
-font pango:Inconsolata 10
+font pango:Source Code Pro 16
 
 new_window pixel 3
 hide_edge_borders both
 focus_follows_mouse no
 
 # lock switch to workspace 1 && lock the screen
-bindsym $mod+i exec i3-msg workspace 1: work && i3lock -c 111111 -d
+bindsym $mod+i exec i3-msg workspace 1 && i3lock -c 111111 -d
 
 # start a terminal
+bindsym $mod+Return exec gnome-terminal
+#i3-sensible-terminal #termite 
 
 #bindsym $mod+Return exec emacsclient -c -e "(eshell)"
-bindsym $mod+Return exec gnome-terminal #i3-sensible-terminal #termite
-bindsym $mod+space exec emacsclient -e '(bongo-pause/resume)'
+bindsym $mod+space exec emacsclient -e
 
-workspace "1: emacs" output DVI-1
-workspace "2: web" output DVI-1
+workspace "1" output HDMI-0
+workspace "2" output HDMI-0
+workspace "3" output HDMI-1
 
-exec --no-startup-id "i3-msg 'workspace 1: emacs; exec emacs --deamon'"
-exec --no-startup-id "i3-msg 'workspace 2: web; exec google-chrome'"
+exec --no-startup-id "i3-msg 'workspace 1; append_layout /home/yenda/dotfiles/i3/workspace-3.json'"
+
+exec --no-startup-id "i3-msg 'workspace 2; exec gnome-terminal'"
+exec --no-startup-id "i3-msg 'workspace 1; exec emacs'"
+exec --no-startup-id "i3-msg 'workspace 3; exec chromium-browser'"
+
 exec volumeicon
+
+bindsym $mod+u floating toggle
 
 # kill focused window
 bindsym $mod+Shift+q kill
 
 # start dmenu (a program launcher)
-bindsym $mod+d exec dmenu_run
+bindsym $mod+d exec rofi -show drun -show-icons
 
 # change focus
 bindsym $mod+h focus left
@@ -76,12 +84,13 @@ bindsym XF86AudioMute exec "pactl set-sink-mute @DEFAULT_SINK@ toggle"
 bindsym $mod+a workspace next
 
 # Name the workspaces
-set $tag1 "1: emacs"
-set $tag2 "2: web"
+set $tag1 "1"
+set $tag2 "2"
+set $tag3 "3"
 
 # # switch to workspace
-bindsym $mod+1 workspace $tag1
-bindsym $mod+2 workspace $tag2
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
 bindsym $mod+3 workspace 3
 bindsym $mod+4 workspace 4
 bindsym $mod+5 workspace 5
@@ -92,8 +101,8 @@ bindsym $mod+9 workspace 9
 bindsym $mod+0 workspace 10
 
 # # move focused container to workspace
-bindsym $mod+Shift+1 move container to workspace $tag1
-bindsym $mod+Shift+2 move container to workspace $tag2
+bindsym $mod+Shift+1 move container to workspace 1
+bindsym $mod+Shift+2 move container to workspace 2
 bindsym $mod+Shift+3 move container to workspace 3
 bindsym $mod+Shift+4 move container to workspace 4
 bindsym $mod+Shift+5 move container to workspace 5
@@ -153,17 +162,4 @@ client.focused_inactive #073642 #073642 #eee8d5 #6c71c4
 client.unfocused #073642 #073642 #93a1a1 #586e75
 client.urgent #d33682 #d33682 #fdf6e3 #dc322f
 
-set $mode_system System (l) lock, (e) logout, (s) suspend, (h) hibernate, (r) reboot, (Shift+s) shutdown
-mode "$mode_system" {
-    bindsym l exec --no-startup-id ~/.i3/i3exit lock, mode "default"
-    bindsym e exec --no-startup-id ~/.i3/i3exit logout, mode "default"
-    bindsym s exec --no-startup-id ~/.i3/i3exit suspend, mode "default"
-    bindsym h exec --no-startup-id ~/.i3/i3exit hibernate, mode "default"
-    bindsym r exec --no-startup-id ~/.i3/i3exit reboot, mode "default"
-    bindsym Shift+s exec --no-startup-id ~/.i3/i3exit shutdown, mode "default"
-
-    # back to normal: Enter or Escape
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
-}
-bindsym $mod+p mode "$mode_system"
+bindsym $mod+p exec ~/.i3/rofi-power-management

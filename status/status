@@ -8,19 +8,12 @@ lsof -i :8081 | awk 'NR!=1 {print $2}' | xargs kill
 echo "Starting Android Emulator"
 AVD_NAME=$1
 
-~/Android/Sdk/emulator/emulator -avd ${AVD_NAME:-wallet} -wipe-data &
+~/Android/Sdk/emulator/emulator -avd status -wipe-data &
 
-cd status-react
+# cd status-react-mobile
+# echo "Cleaning up..."
+# make clean
+# make watch-android-avd
 
-echo "Cleaning up..."
-#_ rm -rf node_modules
-rm package-lock.json
-rm -rf target
-rm index.android.js
-lein clean
+# echo "you can now use M-x cider-connect-clojurescript to connect to the repl"
 
-make startdev-android-avd
-
-echo "you can now use M-x cider-connect-clojurescript to connect to the repl"
-echo "in the repl use '(figwheel-sidecar.repl-api/cljs-repl)' to open a cljs-repl"
-# (figwheel-sidecar.repl-api/cljs-repl)

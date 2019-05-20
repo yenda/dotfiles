@@ -79,6 +79,7 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 . ~/.bash_globals
 . ~/.bash_functions
 . ~/.bash_aliases
+. ~/dotfiles/screenlayout/dual_screen.sh
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
@@ -97,28 +98,5 @@ export EDITOR="emacsclient -c"
 
 /usr/bin/setxkbmap -option "caps:swapescape"
 
-export ANDROID_HOME=$HOME/Android/Sdk
-export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
-export JAVA_HOME=/usr/lib/jvm/java-1.8.0
+export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 export PATH=$PATH:$JAVA_HOME/bin
-export ANDROID_NDK_HOME=$HOME/android-ndk
-
-export PATH=$PATH:/usr/local/go/bin
-export GOPATH=$HOME/go
-export STATUS_REACT_HOME=$HOME/status-react
-export STATUS_GO_HOME=$GOPATH/src/github.com/status-im/status-go
-
-export ANDROID_SDK=$ANDROID_HOME
-export ANDROID_NDK=$HOME/android-ndk/android-ndk-r10e
-export ANDROID_NDK_HOME=$HOME/android-ndk/android-ndk-r10e
-
-export PATH=${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${ANDROID_HOME}/emulator:${PATH}
-
-export PATH=$PATH:/usr/local/go/bin
-export GOPATH=$HOME/go
-export STATUS_REACT_HOME=$HOME/status-react
-export STATUS_GO_HOME=$GOPATH/src/github.com/status-im/status-go
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

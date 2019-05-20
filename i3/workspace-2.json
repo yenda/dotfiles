@@ -1,0 +1,82 @@
+// vim:ts=4:sw=4:et
+{
+    // splitv split container with 2 children
+    "border": "pixel",
+    "floating": "auto_off",
+    "layout": "splitv",
+    "percent": 0.5,
+    "type": "con",
+    "nodes": [
+        {
+            "border": "pixel",
+            "current_border_width": 3,
+            "floating": "auto_off",
+            "geometry": {
+               "height": 410,
+               "width": 654,
+               "x": 0,
+               "y": 0
+            },
+            "name": "yenda@desktop: ~",
+            "percent": 0.5,
+            "swallows": [
+               {
+               // "class": "^Gnome\\-terminal$",
+               // "instance": "^gnome\\-terminal\\-server$",
+               // "title": "^yenda\\@desktop\\:\\ \\~$",
+               // "transient_for": "^$",
+               // "window_role": "^gnome\\-terminal\\-window\\-46bcca31\\-263e\\-4491\\-832c\\-88ced249730d$"
+               }
+            ],
+            "type": "con"
+        },
+        {
+            "border": "pixel",
+            "current_border_width": 3,
+            "floating": "auto_off",
+            "geometry": {
+               "height": 410,
+               "width": 654,
+               "x": 0,
+               "y": 0
+            },
+            "name": "yenda@desktop: ~",
+            "percent": 0.5,
+            "swallows": [
+               {
+               // "class": "^Gnome\\-terminal$",
+               // "instance": "^gnome\\-terminal\\-server$",
+               // "title": "^yenda\\@desktop\\:\\ \\~$",
+               // "transient_for": "^$",
+               // "window_role": "^gnome\\-terminal\\-window\\-4efa1801\\-5039\\-46e4\\-8f93\\-9787ae5b218f$"
+               }
+            ],
+            "type": "con"
+        }
+    ]
+}
+
+{
+    "border": "pixel",
+    "current_border_width": 3,
+    "floating": "auto_off",
+    "geometry": {
+       "height": 410,
+       "width": 654,
+       "x": 0,
+       "y": 0
+    },
+    "name": "yenda@desktop: ~",
+    "percent": 0.5,
+    "swallows": [
+       {
+       // "class": "^Gnome\\-terminal$",
+       // "instance": "^gnome\\-terminal\\-server$",
+       // "title": "^yenda\\@desktop\\:\\ \\~$",
+       // "transient_for": "^$",
+       // "window_role": "^gnome\\-terminal\\-window\\-9c92573e\\-ea56\\-49b2\\-9bc2\\-f5e6c174e2f6$"
+       }
+    ],
+    "type": "con"
+}
+

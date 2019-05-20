@@ -1,0 +1,48 @@
+// vim:ts=4:sw=4:et
+{
+    "border": "pixel",
+    "current_border_width": 3,
+    "floating": "auto_off",
+    "geometry": {
+       "height": 528,
+       "width": 592,
+       "x": 0,
+       "y": 0
+    },
+    "name": "emacs@desktop",
+    "percent": 0.5,
+    "swallows": [
+       {
+       // "class": "^Emacs$",
+       // "instance": "^emacs$",
+       // "title": "^emacs\\@desktop$",
+       // "transient_for": "^$"
+       }
+    ],
+    "type": "con"
+}
+
+{
+    "border": "pixel",
+    "current_border_width": 3,
+    "floating": "auto_off",
+    "geometry": {
+       "height": 410,
+       "width": 654,
+       "x": 0,
+       "y": 0
+    },
+    "name": "yenda@desktop: ~",
+    "percent": 0.5,
+    "swallows": [
+       {
+       // "class": "^Gnome\\-terminal$",
+       // "instance": "^gnome\\-terminal\\-server$",
+       // "title": "^yenda\\@desktop\\:\\ \\~$",
+       // "transient_for": "^$",
+       // "window_role": "^gnome\\-terminal\\-window\\-0db0b387\\-53c3\\-4580\\-9bff\\-df84aee4c3e5$"
+       }
+    ],
+    "type": "con"
+}
+
