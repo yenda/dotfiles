@@ -308,15 +308,15 @@ before packages are loaded. If you are unsure, you should try in setting them in
   )
 
 (defun lambdawerk-cleanup-buffer ()
-	"clean up buffer"
+  "clean up buffer"
   (interactive)
   (untabify (point-min) (point-max))
   (delete-trailing-whitespace))
 
 (defun lambdawerk-indent ()
-	(define-clojure-indent
-		(defui '(1 nil nil (1)))
-		(with 'defun)))
+  (define-clojure-indent
+    (defui '(1 nil nil (1)))
+    (with 'defun)))
 
 (defun my/org-insert-src-block (src-code-type)
   "Insert a `SRC-CODE-TYPE' type source code block in org-mode."
@@ -343,7 +343,7 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (require 'helm-bookmark)
-  
+
   (add-hook 'clojure-mode-hook
             (lambda ()
               (put-clojure-indent 'letsubs 1)
@@ -382,17 +382,10 @@ you should place your code here."
   (define-key smartparens-mode-map (kbd "C-k") 'sp-kill-sexp)
   (define-key smartparens-mode-map (kbd "M-s") 'sp-splice-sexp)
 
-  (setq cider-cljs-lein-repl
-        "(do (require 'figwheel-sidecar.repl-api)
-           (figwheel-sidecar.repl-api/start-figwheel!)
-           (figwheel-sidecar.repl-api/cljs-repl))")
-
   (global-set-key (kbd "<f1>") (lambda() (interactive) (find-file (concat "~/org/daily/" (format-time-string "%Y%m%d") ".org"))))
   (global-set-key (kbd "<f2>") (lambda() (interactive) (find-file "~/org/todo.org")))
   (define-key global-map (kbd "C-+") 'text-scale-increase)
   (define-key global-map (kbd "C--") 'text-scale-decrease)
-
-  
 
   ;; ORGMODE
 
@@ -409,41 +402,10 @@ you should place your code here."
   (global-set-key (kbd "C-z") 'undo)
 
   (global-set-key (kbd "C-x C-g") 'magit-status)
-  (define-key smartparens-mode-map (kbd "C-d") 'delete-forward-char)
-  )
-
-(defun custom-cider-jack-in ()
-  (interactive)
-  (let ((status-desktop-params "with-profile +figwheel repl"))
-    (set-variable 'cider-lein-parameters status-desktop-params)
-    (message "setting 'cider-lein-parameters")
-    (cider-jack-in '())))
-
-(defun start-figwheel-cljs-repl ()
-  (interactive)
-  (set-buffer "*cider-repl status-react*")
-  (goto-char (point-max))
-  (insert "(do (use 'figwheel-api)
-           (start [:desktop])
-           (start-cljs-repl))")
-  (cider-repl-return))
+  (define-key smartparens-mode-map (kbd "C-d") 'delete-forward-char))
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (ghub let-alist rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv rake minitest chruby bundler inf-ruby go-guru go-eldoc company-go go-mode org-category-capture csv-mode winum fuzzy nix-mode web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor js2-mode js-doc company-tern dash-functional tern coffee-mode yaml-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data helm-company helm-c-yasnippet company-statistics company clojure-snippets auto-yasnippet ac-ispell auto-complete xterm-color smeargle shell-pop orgit org-projectile pcache org-present org org-pomodoro alert log4e gntp org-download multi-term mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md evil-magit magit magit-popup git-commit with-editor eshell-z eshell-prompt-extras esh-help clj-refactor inflections edn multiple-cursors paredit yasnippet peg cider-eval-sexp-fu cider seq queue clojure-mode ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-theme))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
 This is an auto-generated function, do not modify its content directly, use
@@ -454,12 +416,27 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(cider-repl-pop-to-buffer-on-connect t)
+ '(helm-ff-lynx-style-map t)
  '(package-selected-packages
    (quote
     (flycheck ghub let-alist rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv rake minitest chruby bundler inf-ruby go-guru go-eldoc company-go go-mode org-category-capture csv-mode winum fuzzy nix-mode web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor js2-mode js-doc company-tern dash-functional tern coffee-mode yaml-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data helm-company helm-c-yasnippet company-statistics company clojure-snippets auto-yasnippet ac-ispell auto-complete xterm-color smeargle shell-pop orgit org-projectile pcache org-present org org-pomodoro alert log4e gntp org-download multi-term mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md evil-magit magit magit-popup git-commit with-editor eshell-z eshell-prompt-extras esh-help clj-refactor inflections edn multiple-cursors paredit yasnippet peg cider-eval-sexp-fu cider seq queue clojure-mode ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-theme)))
  '(safe-local-variable-values
    (quote
-    ((cider-default-cljs-repl . figwheel-repl)
+    ((eval define-clojure-indent
+           (animation/interpolate 0)
+           (animation/start 0)
+           (animation/parallel 0))
+     (eval define-clojure-indent
+           (animation/start 0)
+           (animation/parallel 2))
+     (eval define-clojure-indent
+           (animation/start 2)
+           (animation/parallel 2))
+     (cider-default-cljs-repl . shadow)
+     (cider-shadow-cljs-default-options . "app")
+     (cider-default-cljs-repl . shadow-select)
+     (cider-default-cljs-repl . figwheel-repl)
      (cider-cljs-repl-types
       (figwheel-repl "(do (require 'figwheel-sidecar.repl-api) (figwheel-sidecar.repl-api/cljs-repl))" cider-check-figwheel-requirements))
      (typescript-backend . tide)
