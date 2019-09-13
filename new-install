@@ -1,0 +1,47 @@
+sudo apt-get install --yes git chromium stow rofi i3 silversearcher-ag libc6:i386 libncurses5:i386 libstdc++6:i386 lib32z1 libbz2-1.0:i386
+ libgtk2.0-dev libc6-dev  libncurses5-dev libpng-dev libtiff5-dev xaw3dg-dev zlib1g-dev libice-dev libsm-dev libx11-dev libxext-dev libxi-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxt-dev libxtst-dev libxv-dev libjpeg-dev libjpeg8-dev libjpeg-turbo8-dev libgif-dev libgnutls28-dev qemu-kvm libvirt-bin ubuntu-vm-builder bridge-utils ia32-libs-multiarch xclip libgtk2.0-dev
+
+Add font source-code-pro
+
+[ -d /usr/share/fonts/opentype ] || sudo mkdir /usr/share/fonts/opentype
+sudo git clone --depth 1 --branch release https://github.com/adobe-fonts/source-code-pro.git /usr/share/fonts/opentype/scp
+sudo fc-cache -f -v
+
+Build and install emacs
+
+http://ftp.gnu.org/gnu/emacs/
+
+./autogen.sh    # not needed when installing from tarball
+./configure -with-x-toolkit=gtk
+make
+make install
+
+Add font source-code-pro
+
+[ -d /usr/share/fonts/opentype ] || sudo mkdir /usr/share/fonts/opentype
+sudo git clone --depth 1 --branch release https://github.com/adobe-fonts/source-code-pro.git /usr/share/fonts/opentype/scp
+sudo fc-cache -f -v
+
+# Install android studio
+
+https://developer.android.com/studio/intro
+
+sudo adduser $USER kvm
+
+# Install expressvpn
+https://www.expressvpn.com/subscriptions
+
+# Install Trezor Bridge
+https://wallet.trezor.io/#/
+
+# Install watchman
+
+git clone https://github.com/facebook/watchman.git
+cd watchman
+git checkout v4.9.0  # the latest stable release
+./autogen.sh
+./configure
+make
+sudo make install
+
+echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_user_watches && echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_queued_events && echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_user_instances && watchman shutdown-server && sudo sysctl -p
