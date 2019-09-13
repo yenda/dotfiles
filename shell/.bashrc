@@ -79,7 +79,6 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 . ~/.bash_globals
 . ~/.bash_functions
 . ~/.bash_aliases
-. ~/dotfiles/screenlayout/dual_screen.sh
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
@@ -98,5 +97,19 @@ export EDITOR="emacsclient -c"
 
 /usr/bin/setxkbmap -option "caps:swapescape"
 
-export JAVA_HOME=/usr/lib/jvm/java-8-oracle
-export PATH=$PATH:$JAVA_HOME/bin
+#export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+#export PATH=$PATH:$JAVA_HOME/bin
+
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
+export ANDROID_SDK=$ANDROID_HOME
+
+export PATH=${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${ANDROID_HOME}/emulator:${PATH}
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
