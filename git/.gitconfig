@@ -1,6 +1,6 @@
 [user]
-	email = eric@status.im 
+	email = yenda1@gmail.com
 	name = yenda
-	signingkey = 0095623C0069DCE6
+	signingkey = 28E3756BA1D69C17
 [commit]
     gpgsign = true
