@@ -115,7 +115,7 @@ values."
    ;; (default 'vim)
    dotspacemacs-editing-style '(hybrid :variables
                                        hybrid-mode-enable-evilified-state t
-                                       hybrid-mode-enable-hjkl-bindings nil
+                                       hybrid-mode-enable-hjkl-bindings t
                                        hybrid-mode-default-state 'emacs)
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading t

@@ -63,9 +63,20 @@ docker run hello-world
 
 # Install android studio
 
-https://developer.android.com/studio/intro
+link
+https://developer.android.com/studio
+
+install
+https://developer.android.com/studio/install
 
 sudo adduser $USER kvm
+
+yenda@project2501:~$ tar xvf android-studio-ide-201.6953283-linux.tar.gz -C /opt/
+yenda@project2501:~$ sudo chmod o+w /opt/android-studio/
+yenda@project2501:~$ sudo mkdir /opt/android-sdk
+yenda@project2501:~$ sudo chmod o+w /opt/android-sdk/
+yenda@project2501:~$ sudo rm -rf /opt/android-sdk/
+yenda@project2501:~$ /opt/android-studio/bin/studio.sh 
 
 # Install expressvpn
 https://www.expressvpn.com/subscriptions
@@ -82,3 +93,17 @@ sudo make install
 
 echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_user_watches && echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_queued_events && echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_user_instances && watchman shutdown-server && sudo sysctl -p
 
+# Install nodejs
+
+https://github.com/nodesource/distributions/blob/master/README.md
+
+## Using Ubuntu
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+sudo apt-get install -y nodejs
+sudo apt-get install gcc g++ make
+curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo apt-get update && sudo apt-get install yarn
+
+yenda@project2501:~/clash$ sudo npm i -g npm-completion
+yenda@project2501:~/clash$ sudo npm-completion-setup 
