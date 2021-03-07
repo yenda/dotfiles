@@ -100,3 +100,38 @@ export EDITOR="emacsclient -c"
 
 export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 export PATH=$PATH:$JAVA_HOME/bin
+
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
+# export ANDROID_NDK_HOME=$HOME/android-ndk
+
+export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin/
+export GOPATH=$HOME/go
+export STATUS_REACT_HOME=$HOME/status-react
+export STATUS_GO_HOME=$GOPATH/src/github.com/status-im/status-go
+
+export ANDROID_SDK=$ANDROID_HOME
+# export ANDROID_NDK=$HOME/android-ndk/android-ndk-r10e
+# export ANDROID_NDK_HOME=$HOME/android-ndk/android-ndk-r10e
+
+export PATH=${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${ANDROID_HOME}/emulator:${PATH}
+
+export PATH=$PATH:/usr/local/go/bin
+export GOPATH=$HOME/go
+export STATUS_REACT_HOME=$HOME/status-react
+export STATUS_GO_HOME=$GOPATH/src/github.com/status-im/status-go
+export PATH=$PATH:/opt/gradle/gradle-5.6.3/bin
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+export SHADOW_HOST=192.168.1.169
+export API_HOST=192.168.1.169
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/yenda/Downloads/google-cloud-sdk/path.bash.inc' ]; then . '/home/yenda/Downloads/google-cloud-sdk/path.bash.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/yenda/Downloads/google-cloud-sdk/completion.bash.inc' ]; then . '/home/yenda/Downloads/google-cloud-sdk/completion.bash.inc'; fi

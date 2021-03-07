@@ -24,3 +24,17 @@ generate-ssh-key(){
 killnode(){
   lsof -i :8081 | awk 'NR!=1 {print $2}' | xargs kill
 }
+
+status(){
+  /home/yenda/status
+  cd status-react/
+}
+
+clash(){
+  /home/yenda/clash-mobile/scripts/clash
+}
+
+status-emulator(){
+  /home/yenda/status-emulator.sh
+  cd status-react/
+}
