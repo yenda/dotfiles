@@ -30,7 +30,14 @@ values."
    dotspacemacs-configuration-layer-path '()
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(typescript
+   '(react
+     github
+     asciidoc
+     nginx
+     swift
+     sql
+     typescript
+     debug
      rust
      go
      python
@@ -38,6 +45,7 @@ values."
      octave
      ruby
      csv
+     protobuf
      javascript
      yaml
      html
@@ -47,11 +55,13 @@ values."
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      helm
+
      auto-completion
      ;; better-defaults
      emacs-lisp
      (clojure :variables
-              clojure-enable-clj-refactor t)
+              clojure-enable-clj-refactor t
+              clojure-enable-linters 'clj-kondo)
      git
      markdown
      org
@@ -66,7 +76,13 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(nix-mode)
+   dotspacemacs-additional-packages '(wgrep-ag
+                                      password-store
+                                      pass
+                                      helm-pass
+                                      nix-mode
+                                      indium
+                                      graphql-mode)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -115,7 +131,7 @@ values."
    ;; (default 'vim)
    dotspacemacs-editing-style '(hybrid :variables
                                        hybrid-mode-enable-evilified-state t
-                                       hybrid-mode-enable-hjkl-bindings nil
+                                       hybrid-mode-enable-hjkl-bindings t
                                        hybrid-mode-default-state 'emacs)
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading t
@@ -148,7 +164,7 @@ values."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 18
+                               :size 21
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -308,15 +324,15 @@ before packages are loaded. If you are unsure, you should try in setting them in
   )
 
 (defun lambdawerk-cleanup-buffer ()
-	"clean up buffer"
+  "clean up buffer"
   (interactive)
   (untabify (point-min) (point-max))
   (delete-trailing-whitespace))
 
 (defun lambdawerk-indent ()
-	(define-clojure-indent
-		(defui '(1 nil nil (1)))
-		(with 'defun)))
+  (define-clojure-indent
+    (defui '(1 nil nil (1)))
+    (with 'defun)))
 
 (defun my/org-insert-src-block (src-code-type)
   "Insert a `SRC-CODE-TYPE' type source code block in org-mode."
@@ -342,10 +358,16 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+
+  (setq auth-sources '(password-store))
+  (auth-source-pass-enable)
   (require 'helm-bookmark)
-  
+  (setq-default typescript-indent-level 2)
+  (setq-default dotspacemacs-configuration-layers '(
+                                                    (typescript :variables typescript-backend 'tide)))
   (add-hook 'clojure-mode-hook
             (lambda ()
+              (clj-refactor-mode 1)
               (put-clojure-indent 'letsubs 1)
               (put-clojure-indent 'create-class 0)
               (put-clojure-indent 'register-handler-db -1)
@@ -356,7 +378,6 @@ you should place your code here."
               (put-clojure-indent 'reg-cofx -1)
               (put-clojure-indent 'reg-sub -1)
               (put-clojure-indent 'allowed-keys -1)
-              (put-clojure-indent 'start 0)
               (put-clojure-indent 'list-item 0)
               (put-clojure-indent 'setTimeout 0)
               (put-clojure-indent 'set-timeout 0)
@@ -375,34 +396,35 @@ you should place your code here."
               (put-clojure-indent 'leval/eval-in-project 0)
               (lambdawerk-indent)
               (add-hook 'before-save-hook 'lambdawerk-cleanup-buffer t t)))
-  (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
+  (add-hook 'clojure-mode-hook 'aggressive-indent-mode)
+  (add-hook 'clojure-mode-hook 'turn-on-fci-mode)
   (define-key global-map (kbd "M-f") 'helm-projectile-ag)
   (define-key smartparens-mode-map (kbd "C-<right>") 'sp-forward-slurp-sexp)
   (define-key smartparens-mode-map (kbd "C-<left>") 'sp-forward-barf-sexp)
   (define-key smartparens-mode-map (kbd "C-k") 'sp-kill-sexp)
   (define-key smartparens-mode-map (kbd "M-s") 'sp-splice-sexp)
 
-  (setq cider-cljs-lein-repl
-        "(do (require 'figwheel-sidecar.repl-api)
-           (figwheel-sidecar.repl-api/start-figwheel!)
-           (figwheel-sidecar.repl-api/cljs-repl))")
-
   (global-set-key (kbd "<f1>") (lambda() (interactive) (find-file (concat "~/org/daily/" (format-time-string "%Y%m%d") ".org"))))
-  (global-set-key (kbd "<f2>") (lambda() (interactive) (find-file "~/org/todo.org")))
+  (global-set-key (kbd "<f2>") (lambda() (interactive) (find-file "~/Dropbox/org/todo.org")))
   (define-key global-map (kbd "C-+") 'text-scale-increase)
   (define-key global-map (kbd "C--") 'text-scale-decrease)
-
-  
 
   ;; ORGMODE
 
   (setq org-src-fontify-natively t)
 
-
   (with-eval-after-load 'org
     (define-key org-mode-map (kbd "C-c s e") 'org-edit-src-code)
     (define-key org-mode-map (kbd "C-c s i") 'my/org-insert-src-block)
     (define-key org-mode-map (kbd "C-c C-x i") 'org-clock-in))
+
+  (defun push-to-mac ()
+    (interactive)
+    (magit-commit-extend)
+    (let ((current-branch (magit-get-current-branch)))
+      (magit-git-push current-branch
+                      (concat "mac/" current-branch)
+                      (list "--force"))))
 
   ;; fix the C-z hanging and replace it by undo
   (global-unset-key (kbd "C-z"))
@@ -410,23 +432,28 @@ you should place your code here."
 
   (global-set-key (kbd "C-x C-g") 'magit-status)
   (define-key smartparens-mode-map (kbd "C-d") 'delete-forward-char)
-  )
+  (global-set-key (kbd "C-x p") 'push-to-mac))
 
-(defun custom-cider-jack-in ()
-  (interactive)
-  (let ((status-desktop-params "with-profile +figwheel repl"))
-    (set-variable 'cider-lein-parameters status-desktop-params)
-    (message "setting 'cider-lein-parameters")
-    (cider-jack-in '())))
+;; (add-hook 'clojure-mode-hook 'lsp)
+;; (add-hook 'clojurescript-mode-hook 'lsp)
+;; (add-hook 'clojurec-mode-hook 'lsp)
 
-(defun start-figwheel-cljs-repl ()
-  (interactive)
-  (set-buffer "*cider-repl status-react*")
-  (goto-char (point-max))
-  (insert "(do (use 'figwheel-api)
-           (start [:desktop])
-           (start-cljs-repl))")
-  (cider-repl-return))
+;; (setq gc-cons-threshold (* 100 1024 1024)
+;;       read-process-output-max (* 1024 1024)
+;;       treemacs-space-between-root-nodes nil
+;;       company-minimum-prefix-length 1
+;;       lsp-lens-enable t
+;;       lsp-signature-auto-activate nil 
+;;                                         ; lsp-enable-indentation nil ; uncomment to use cider indentation instead of lsp
+;;                                         ; lsp-enable-completion-at-point nil ; uncomment to use cider completion instead of lsp
+;;       )
+;; (setq lsp-clojure-custom-server-command '("bash" "-c" "/home/yenda/bin/clojure-lsp"))
+
+(add-hook 'makefile-mode-hook
+          (lambda ()
+            (setq indent-tabs-mode t)
+            (setq-default indent-tabs-mode t)
+            (setq tab-width 2)))
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -454,14 +481,37 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(cider-inject-dependencies-at-jack-in t)
+ '(epa-pinentry-mode (quote loopback))
+ '(evil-want-Y-yank-to-eol nil)
  '(package-selected-packages
    (quote
-    (flycheck ghub let-alist rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv rake minitest chruby bundler inf-ruby go-guru go-eldoc company-go go-mode org-category-capture csv-mode winum fuzzy nix-mode web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor js2-mode js-doc company-tern dash-functional tern coffee-mode yaml-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data helm-company helm-c-yasnippet company-statistics company clojure-snippets auto-yasnippet ac-ispell auto-complete xterm-color smeargle shell-pop orgit org-projectile pcache org-present org org-pomodoro alert log4e gntp org-download multi-term mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md evil-magit magit magit-popup git-commit with-editor eshell-z eshell-prompt-extras esh-help clj-refactor inflections edn multiple-cursors paredit yasnippet peg cider-eval-sexp-fu cider seq queue clojure-mode ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-theme)))
+    (wgrep-ag protobuf-mode kotlin-mode rjsx-mode import-js grizzl add-node-modules-path ghub let-alist rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv rake minitest chruby bundler inf-ruby go-guru go-eldoc company-go go-mode org-category-capture csv-mode winum fuzzy nix-mode web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor js2-mode js-doc company-tern dash-functional tern coffee-mode yaml-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data helm-company helm-c-yasnippet company-statistics company clojure-snippets auto-yasnippet ac-ispell auto-complete xterm-color smeargle shell-pop orgit org-projectile pcache org-present org org-pomodoro alert log4e gntp org-download multi-term mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md evil-magit magit magit-popup git-commit with-editor eshell-z eshell-prompt-extras esh-help clj-refactor inflections edn multiple-cursors paredit yasnippet peg cider-eval-sexp-fu cider seq queue clojure-mode ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-theme)))
  '(safe-local-variable-values
    (quote
-    ((cider-default-cljs-repl . figwheel-repl)
-     (cider-cljs-repl-types
-      (figwheel-repl "(do (require 'figwheel-sidecar.repl-api) (figwheel-sidecar.repl-api/cljs-repl))" cider-check-figwheel-requirements))
+    ((eval define-clojure-indent
+           (codepoint-case
+            (quote defun)))
+     (cider-path-translations
+      ("/root" . "/home/yenda")
+      ("/usr/src/app" . "/home/yenda/clash-backend"))
+     (cider-preferred-build-tool . clojure-cli)
+     (cider-clojure-cli-global-options . "-A:dev:test")
+     (cider-ns-refresh-before-fn . "com.stuartsierra.component.repl/stop")
+     (cider-ns-refresh-after-fn . "com.stuartsierra.component.repl/start")
+     (cider-known-endpoints
+      ("localhost" "9656"))
+     (eval define-clojure-indent
+           (animation/interpolate 0)
+           (animation/start 0)
+           (animation/parallel 0))
+     (eval define-clojure-indent
+           (animation/start 0)
+           (animation/parallel 0))
+     (cider-shadow-cljs-default-options . "app")
+     (cider-default-cljs-repl . shadow)
+     (cider-default-cljs-repl . shadow-select)
+     (cider-default-cljs-repl . figwheel-repl)
      (typescript-backend . tide)
      (typescript-backend . lsp)
      (javascript-backend . tern)
