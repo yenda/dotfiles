@@ -76,7 +76,8 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(wgrep-ag
+   dotspacemacs-additional-packages '(multi-vterm
+                                      wgrep-ag
                                       password-store
                                       pass
                                       helm-pass
@@ -398,6 +399,7 @@ you should place your code here."
               (add-hook 'before-save-hook 'lambdawerk-cleanup-buffer t t)))
   (add-hook 'clojure-mode-hook 'aggressive-indent-mode)
   (add-hook 'clojure-mode-hook 'turn-on-fci-mode)
+  (define-key global-map (kbd "C-<return>") 'multi-vterm)
   (define-key global-map (kbd "M-f") 'helm-projectile-ag)
   (define-key smartparens-mode-map (kbd "C-<right>") 'sp-forward-slurp-sexp)
   (define-key smartparens-mode-map (kbd "C-<left>") 'sp-forward-barf-sexp)
