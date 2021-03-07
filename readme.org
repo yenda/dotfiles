@@ -1,10 +1,10 @@
-sudo apt-get install --yes git chromium stow rofi i3 silversearcher-ag libc6:i386 libncurses5:i386 libstdc++6:i386 lib32z1 libbz2-1.0:i386 libgtk2.0-dev libc6-dev  libncurses5-dev libpng-dev libtiff5-dev xaw3dg-dev zlib1g-dev libice-dev libsm-dev libx11-dev libxext-dev libxi-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxt-dev libxtst-dev libxv-dev libjpeg-dev libjpeg8-dev libjpeg-turbo8-dev libgif-dev libgnutls28-dev 
+sudo apt-get install --yes pass git chromium stow rofi i3 silversearcher-ag libc6:i386 libncurses5:i386 libstdc++6:i386 lib32z1 libbz2-1.0:i386 libgtk2.0-dev libc6-dev  libncurses5-dev libpng-dev libtiff5-dev xaw3dg-dev zlib1g-dev libice-dev libsm-dev libx11-dev libxext-dev libxi-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxt-dev libxtst-dev libxv-dev libjpeg-dev libjpeg8-dev libjpeg-turbo8-dev libgif-dev libgnutls28-dev 
 
 sudo apt-get install qemu qemu-kvm libvirt-daemon bridge-utils virt-manager virtinst ia32-libs-multiarch 
 
 sudo apt-get install xclip libgtk2.0-dev
 
-# install dotfiles
+* install dotfiles
 
 ```
 rm bashrc .bash_logout
@@ -12,7 +12,7 @@ cd dotfiles
 ./install.sh
 ```
 
-# generate ssh key and add ssh key to github in chromium
+* generate ssh key and add ssh key to github in chromium
 generate-ssh-key github
 
 Add font source-code-pro
@@ -21,18 +21,22 @@ Add font source-code-pro
 sudo git clone --depth 1 --branch release https://github.com/adobe-fonts/source-code-pro.git /usr/share/fonts/opentype/scp
 sudo fc-cache -f -v
 
-Build and install emacs
+* Build and install emacs
 
-http://ftp.gnu.org/gnu/emacs/
+Get the code from the gnu [[http://ftp.gnu.org/gnu/emacs/][forge]]
 
+#+BEGIN_SRC sh
 tar -xfv emacs-*
 ./autogen.sh    # not needed when installing from tarball
 ./configure -with-x-toolkit=gtk
 make
 sudo make install
+#+END_SRC
 
-# Install docker
 
+* Install docker
+
+#+BEGIN_SRC sh
 sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
 
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -57,11 +61,18 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 docker --version
 docker-compose --version
+#+END_SRC
 
-## test
+** test
+
+#+BEGIN_SRC sh
 docker run hello-world
+#+END_SRC
 
-# Install android studio
+
+
+
+* Install android studio
 
 link
 https://developer.android.com/studio
@@ -78,10 +89,10 @@ yenda@project2501:~$ sudo chmod o+w /opt/android-sdk/
 yenda@project2501:~$ sudo rm -rf /opt/android-sdk/
 yenda@project2501:~$ /opt/android-studio/bin/studio.sh 
 
-# Install expressvpn
+* Install expressvpn
 https://www.expressvpn.com/subscriptions
 
-# Install watchman
+* Install watchman
 
 git clone https://github.com/facebook/watchman.git
 cd watchman
@@ -93,11 +104,11 @@ sudo make install
 
 echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_user_watches && echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_queued_events && echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_user_instances && watchman shutdown-server && sudo sysctl -p
 
-# Install nodejs
+* Install nodejs
 
 https://github.com/nodesource/distributions/blob/master/README.md
 
-## Using Ubuntu
+** Using Ubuntu
 curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt-get install -y nodejs
 sudo apt-get install gcc g++ make
