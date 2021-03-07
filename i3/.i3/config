@@ -7,7 +7,7 @@ hide_edge_borders both
 focus_follows_mouse no
 
 # lock switch to workspace 1 && lock the screen
-bindsym $mod+i exec i3-msg workspace 1 && i3lock -c 111111 -d
+bindsym $mod+i exec i3lock -c 111111 -d
 
 # start a terminal
 bindsym $mod+Return exec gnome-terminal
@@ -20,7 +20,7 @@ workspace "1" output HDMI-0
 workspace "2" output HDMI-0
 workspace "4" output HDMI-1
 
-exec --no-startup-id "i3-msg 'workspace 1; append_layout /home/yenda/dotfiles/i3/workspace-3.json'"
+exec --no-startup-id nm-applet
 
 exec --no-startup-id "i3-msg 'workspace 2; exec gnome-terminal'"
 exec --no-startup-id "i3-msg 'workspace 1; exec emacs'"
@@ -82,11 +82,6 @@ bindsym XF86AudioRaiseVolume exec "pactl set-sink-mute @DEFAULT_SINK@ false ; pa
 bindsym XF86AudioMute exec "pactl set-sink-mute @DEFAULT_SINK@ toggle"
 
 bindsym $mod+a workspace next
-
-# Name the workspaces
-set $tag1 "1"
-set $tag2 "2"
-set $tag3 "3"
 
 # # switch to workspace
 bindsym $mod+1 workspace 1
