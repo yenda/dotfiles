@@ -107,10 +107,6 @@ export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 export SHADOW_HOST=192.168.1.99
 export API_HOST=192.168.1.99
 
-# added for npm-completion https://github.com/Jephuff/npm-bash-completion
-PATH_TO_NPM_COMPLETION="/usr/bin/../lib/node_modules/npm-completion"
-source $PATH_TO_NPM_COMPLETION/npm-completion.sh
-
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/yenda/Downloads/google-cloud-sdk/path.bash.inc' ]; then . '/home/yenda/Downloads/google-cloud-sdk/path.bash.inc'; fi
 
