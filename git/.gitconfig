@@ -4,3 +4,5 @@
 	signingkey = 28E3756BA1D69C17
 [commit]
     gpgsign = true
+[github]
+	user = yenda
