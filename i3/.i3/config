@@ -24,7 +24,8 @@ workspace "4" output HDMI-1
 exec --no-startup-id nm-applet
 
 exec --no-startup-id "i3-msg 'workspace 1; exec emacs'"
-exec --no-startup-id "i3-msg 'workspace 4; exec chromium'"
+exec --no-startup-id "i3-msg 'workspace 2; exec gnome-terminal --command=brian'"
+exec --no-startup-id "i3-msg 'workspace 4; exec google-chrome'"
 
 exec volumeicon
 
@@ -158,3 +159,5 @@ client.unfocused #073642 #073642 #93a1a1 #586e75
 client.urgent #d33682 #d33682 #fdf6e3 #dc322f
 
 bindsym $mod+p exec ~/.i3/rofi-power-management
+
+exec_always --no-startup-id lxsession &

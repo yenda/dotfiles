@@ -91,6 +91,12 @@ if ! shopt -oq posix; then
   fi
 fi
 
+complete -C '/usr/bin/aws_completer' aws
+
+
+export AWS_VAULT_BACKEND=pass
+export AWS_VAULT_PASS_PREFIX=aws-vault
+
 export TERM=xterm-256color
 export PATH=$PATH:/home/yenda/bin
 export EDITOR="emacsclient -c"
@@ -112,3 +118,12 @@ if [ -f '/home/yenda/Downloads/google-cloud-sdk/path.bash.inc' ]; then . '/home/
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/yenda/Downloads/google-cloud-sdk/completion.bash.inc' ]; then . '/home/yenda/Downloads/google-cloud-sdk/completion.bash.inc'; fi
+
+export PATH=$PATH:/usr/local/go/bin:$HOME/flutter/bin
+
+# add Pulumi to the PATH
+export PATH=$PATH:$HOME/.pulumi/bin
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

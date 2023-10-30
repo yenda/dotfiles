@@ -1,4 +1,4 @@
-sudo apt-get install --yes pass editorconfig git chromium stow rofi rlwrap libtool-bin i3 silversearcher-ag cmake libc6:i386 libncurses5:i386 libstdc++6:i386 lib32z1 libbz2-1.0:i386 libgtk2.0-dev libc6-dev  libncurses5-dev libpng-dev libtiff5-dev xaw3dg-dev zlib1g-dev libice-dev libsm-dev libx11-dev libxext-dev libxi-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxt-dev libxtst-dev libxv-dev libjpeg-dev libjpeg8-dev libjpeg-turbo8-dev libgif-dev libgnutls28-dev 
+sudo apt-get install --yes pass editorconfig git stow rofi rlwrap libtool-bin i3 silversearcher-ag cmake libc6:i386 libncurses5:i386 libstdc++6:i386 lib32z1 libbz2-1.0:i386 libgtk2.0-dev libc6-dev  libncurses5-dev libpng-dev libtiff5-dev xaw3dg-dev zlib1g-dev libice-dev libsm-dev libx11-dev libxext-dev libxi-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxt-dev libxtst-dev libxv-dev libjpeg-dev libjpeg8-dev libjpeg-turbo8-dev libgif-dev libgnutls28-dev libu2f-udev
 
 sudo apt-get install qemu qemu-kvm libvirt-daemon bridge-utils virt-manager virtinst ia32-libs-multiarch 
 
@@ -23,14 +23,26 @@ sudo fc-cache -f -v
 
 * Build and install emacs
 
+https://github.com/sogaiu/tree-sitter-clojure
+https://www.masteringemacs.org/article/how-to-get-started-tree-sitter
+
+#+BEGIN_SRC sh
+  git clone git@github.com:tree-sitter/tree-sitter.git
+  cd tree-sitter
+  make
+  sudo make install
+#+END_SRC
+
 Get the code from the gnu [[http://ftp.gnu.org/gnu/emacs/][forge]]
 
 #+BEGIN_SRC sh
-tar -xfv emacs-*
-./autogen.sh    # not needed when installing from tarball
-./configure -with-x-toolkit=gtk
-make
-sudo make install
+  tar -xfv emacs-*
+  ./autogen.sh    # not needed when installing from tarball
+  cd emacs-*
+  sudo apt-get install libgccjit-12-dev
+  ./configure --with-tree-sitter --with-native-compilation
+  make
+  sudo make install
 #+END_SRC
 
 
@@ -71,6 +83,15 @@ docker run hello-world
 
 
 * Install clojure
+
+#+BEGIN_SRC sh
+	curl -sLO https://raw.githubusercontent.com/clj-kondo/clj-kondo/master/script/install-clj-kondo
+	chmod +x install-clj-kondo
+	./install-clj-kondo
+
+	$ bash < <(curl -s https://raw.githubusercontent.com/babashka/babashka/master/install)
+
+#+END_SRC
 
 * Install android studio
 
@@ -118,3 +139,35 @@ sudo apt-get update && sudo apt-get install yarn
 
 yenda@project2501:~/clash$ sudo npm i -g npm-completion
 yenda@project2501:~/clash$ sudo npm-completion-setup 
+
+
+* Streamdeck
+
+  I installed the deb package from https://github.com/muesli/deckmaster and followed the readme
+  
+
+  I cloned the repo https://github.com/muesli/deckmaster-emojis
+  I had to install the Roboto font 
+  sudo apt-get install fonts-roboto
+
+  I tried `deckmaster -deck deckmaster-emojis/main.deck`
+
+  and got no Stream Deck devices found
+
+
+  I installed golang and the built the deckmaster command because the package didn't seem to recognize the streamdeck
+
+  I noticed in systemctl that there was an issue creating the uinput file so I ran
+
+  `sudo chmod 666 /dev/uinput`
+
+  using the main deck from deckmaster-emojis seemed to work
+
+* Keyboard
+
+
+#+BEGIN_SRC sh
+  echo options hid_apple fnmode=2 | sudo tee -a /etc/modprobe.d/hid_apple.conf
+  sudo update-initramfs -u -k all
+  sudo reboot # optional
+#+END_SRC

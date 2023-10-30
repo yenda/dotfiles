@@ -38,3 +38,7 @@ status-emulator(){
   /home/yenda/status-emulator.sh
   cd status-react/
 }
+
+ke() {
+  pkill -SIGUSR2 emacs
+}
