@@ -2,7 +2,7 @@ set $mod Mod4
 
 exec ~/dotfiles/screenlayout/desktop.sh
 
-font pango:Source Code Pro 14
+font DejaVu Sans Mono Book 14
 
 new_window pixel 3
 hide_edge_borders both

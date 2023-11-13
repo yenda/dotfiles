@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(tree-sitter
+     sql
      dart
      (plantuml :variables
 							 plantuml-jar-path "~/bin/plantuml.jar"
@@ -122,7 +123,8 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(git-link
+   dotspacemacs-additional-packages '(logview
+                                      git-link
                                       ob-http
                                       multi-vterm
                                       wgrep-ag
@@ -179,9 +181,8 @@ values."
    ;; with `:variables' keyword (similar to layers). Check the editing styles
    ;; section of the documentation for details on available variables.
    ;; (default 'vim)
-   dotspacemacs-editing-style '(hybrid :variables
-                                       hybrid-style-enable-hjkl-bindings t
-                                       hybrid-style-default-state 'emacs)
+   dotspacemacs-editing-style '(emacs :variables
+                                       hybrid-style-enable-hjkl-bindings t)
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading t
    ;; Specify the startup banner. Default value is `official', it displays
@@ -389,6 +390,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
 (defun my/org-insert-src-block (src-code-type)
   "Insert a `SRC-CODE-TYPE' type source code block in org-mode."
+  (global-undo-tree-mode nil)
+  (setq evil-undo-system 'undo-redo)
+  (evil-set-undo-system 'undo-redo)
   (interactive
    (let ((src-code-types
           '("emacs-lisp" "python" "C" "sh" "java" "js" "clojure" "C++" "css"
@@ -446,7 +450,8 @@ you should place your code here."
   (auth-source-pass-enable)
   (require 'helm-bookmark)
 
-  (setq lsp-ui-sideline-enable nil)
+  (setq lsp-auto-guess-root t)
+  (setq lsp-ui-sideline-enable t)
   (setq lsp-modeline-diagnostics-scope :workspace)
   (add-hook 'clojure-mode-hook
             (lambda ()
@@ -483,9 +488,12 @@ you should place your code here."
             (lambda ()
               (define-key cider-mode-map (kbd "M-c M-c")  'cider-eval-print-last-sexp)
               (define-key cider-mode-map (kbd "C-c M-r") 'cider-ns-refresh)))
-  (add-hook 'clojure-mode-hook 'aggressive-indent-mode)
+  ;; (add-hook 'clojure-mode-hook 'aggressive-indent-mode)
   (define-key global-map (kbd "C-<return>") 'multi-vterm)
   (define-key global-map (kbd "M-f") 'helm-projectile-ag)
+
+  (setq nrepl-hide-special-buffers t)
+  (setq cider-save-file-on-load t)
 
   (defun my-helm-projectile-or-find-files ()
     "Toggle between helm-projectile and spacemacs/helm-find-files."
@@ -507,7 +515,9 @@ you should place your code here."
   (define-key smartparens-mode-map (kbd "C-k") 'sp-kill-sexp)
   (define-key smartparens-mode-map (kbd "M-s") 'sp-splice-sexp)
 
-  (global-set-key (kbd "<f1>") (lambda() (interactive) (find-file "/home/yenda/brian/src/dev/development.clj")
+  (global-set-key (kbd "<f1>") (lambda() (interactive)
+                                 (find-file "/home/yenda/brian/src/dev/development.clj")
+                                 (cider-jack-in-clj&cljs nil)
                                  ;;(find-file (concat "~/org/daily/" (format-time-string "%Y%m%d") ".org"))
                                  ))
   (global-set-key (kbd "<f2>") (lambda() (interactive) (find-file "~/org/todo.org")))
@@ -558,29 +568,16 @@ you should place your code here."
   (define-key smartparens-mode-map (kbd "C-d") 'delete-forward-char)
   (global-set-key (kbd "C-x p") 'push-to-mac)
 
-  (defun my-open-file-hook ()
-    (when (and (eq major-mode 'clojure-mode)
-               (string= buffer-file-name "/home/yenda/brian/src/dev/development.clj"))
-      (message "Connecting to CIDER...")
-      (let ((params (list :host "localhost" :port 7888)))
-        (cider-connect-clj params)
-        (with-current-buffer (cider-current-repl-buffer)
-          (when (cider-connected-p)
-            (message "Loading dev buffer...")
-            (cider-load-file buffer-file-name))))))
-                                        ; Adjust the hostname and port number accordingly
+  (add-hook 'makefile-mode-hook
+            (lambda ()
+              (setq indent-tabs-mode t)
+              (setq-default indent-tabs-mode t)
+              (setq tab-width 2)))
 
-  (add-hook 'find-file-hook 'my-open-file-hook)
+  (setq package-native-compile t)
+
   )
-
-(add-hook 'makefile-mode-hook
-          (lambda ()
-            (setq indent-tabs-mode t)
-            (setq-default indent-tabs-mode t)
-            (setq tab-width 2))
-
-
-          )
+          
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -594,10 +591,11 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(cider-eval-result-duration 'change)
  '(cider-inject-dependencies-at-jack-in t)
- '(cider-interactive-eval-output-destination 'output-buffer)
+ '(cider-interactive-eval-output-destination 'repl-buffer)
+ '(cider-print-fn 'puget)
  '(cider-redirect-server-output-to-repl t)
- '(cider-repl-pop-to-buffer-on-connect t t)
  '(cider-show-error-buffer 'only-in-repl)
  '(epg-pinentry-mode 'loopback)
  '(evil-want-Y-yank-to-eol nil)
@@ -607,9 +605,14 @@ This function is called at the very end of Spacemacs initialization."
  '(magit-diff-refine-ignore-whitespace t)
  '(nrepl-log-messages t)
  '(package-selected-packages
-   '(dart-server flutter lsp-dart jsonrpc dart-mode dap-mode lsp-docker bui yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package undo-tree toml-mode toc-org tide typescript-mode flycheck tagedit spaceline powerline smeargle slim-mode shell-pop scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe restart-emacs rbenv rake rainbow-delimiters racer pos-tip pyvenv pytest pyenv-mode py-isort pug-mode powershell popwin pip-requirements persp-mode pcre2el paradox orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-bullets open-junk-file nix-mode neotree multi-term move-text mmm-mode minitest markdown-toc magit-gitflow magit-popup macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint json-mode json-snatcher json-reformat js2-refactor js2-mode js-doc indent-guide hy-mode dash-functional hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-pydoc helm-projectile projectile helm-mode-manager helm-make helm-gitignore request helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haml-mode google-translate golden-ratio go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit git-commit transient evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump diminish define-word cython-mode csv-mode company-web web-completion-data company-statistics company-go go-mode company-anaconda company column-enforce-mode coffee-mode clojure-snippets clj-refactor hydra inflections multiple-cursors paredit lv clean-aindent-mode cider-eval-sexp-fu eval-sexp-fu cider sesman spinner queue pkg-info parseedn clojure-mode parseclj a epl chruby cargo markdown-mode rust-mode bundler inf-ruby bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup))
+   '(logview yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toml-mode toc-org tide typescript-mode flycheck tagedit spaceline powerline smeargle slim-mode shell-pop scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe restart-emacs rbenv rake rainbow-delimiters racer pos-tip pyvenv pytest pyenv-mode py-isort pug-mode powershell popwin pip-requirements persp-mode pcre2el paradox orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-bullets open-junk-file nix-mode neotree multi-term move-text mmm-mode minitest markdown-toc magit-gitflow magit-popup macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint json-mode json-snatcher json-reformat js2-refactor js2-mode js-doc indent-guide hy-mode dash-functional hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-pydoc helm-projectile projectile helm-mode-manager helm-make helm-gitignore request helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haml-mode google-translate golden-ratio go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit git-commit transient evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump diminish define-word cython-mode csv-mode company-web web-completion-data company-statistics company-go go-mode company-anaconda company column-enforce-mode coffee-mode clojure-snippets clj-refactor hydra inflections multiple-cursors paredit lv clean-aindent-mode cider-eval-sexp-fu eval-sexp-fu cider sesman spinner queue pkg-info parseedn clojure-mode parseclj a epl chruby cargo markdown-mode rust-mode bundler inf-ruby bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup))
  '(safe-local-variable-values
-   '((cider-default-cljs-repl . custom)
+   '((cider-clojure-cli . "-A:dev:rad-dev -J-Dtrace")
+     (eval progn
+           (global-display-fill-column-indicator-mode t)
+           (make-variable-buffer-local 'cider-jack-in-nrepl-middlewares)
+           (add-to-list 'cider-jack-in-nrepl-middlewares "shadow.cljs.devtools.server.nrepl/middleware"))
+     (cider-default-cljs-repl . custom)
      (cider-clojure-cli-aliases . ":env/dev:env/test:enable-server")
      (smerge-lower-re . "^======= \\(.*\\)\12")
      (eval progn
@@ -620,13 +623,13 @@ This function is called at the very end of Spacemacs initialization."
      (eval setenv "AWS_ACCESS_KEY_ID" "EXO03628b63df1311978b45bc3a")
      (eval setenv "AWS_SECRET_ACCESS_KEY" "OR2am2aDESikb1QSmuOen3a3m039X7J8WDXt5p9xeus")
      (eval setenv "AWS_REGION" "ch-dk-2")
-     (cider-clojure-cli-global-options . "-A:dev:rad-dev:reveal -J-Dtrace")
+     (cider-clojure-cli-parameters . "-A:dev:rad-dev:reveal -J-Dtrace")
      (cider-ns-refresh-after-fn . "development/go")
      (cider-ns-refresh-before-fn . "development/stop")
      (cider-ns-refresh-after-fn . "development/restart")
      (cider-ns-refresh-after-fn . "dev/restart")
      (cider-ns-refresh-after-fn . "dev/setup-and-start")
-     (cider-clojure-cli-global-options . "-A:dev:test:cider-clj")
+     (cider-clojure-cli-parameters . "-A:dev:test:cider-clj")
      (eval setenv "CLASH_STAGE" "local")
      (eval setenv "AWS_LOCAL_SQS" "true")
      (eval setenv "AWS_REGION" "eu-west-2")
@@ -657,7 +660,7 @@ This function is called at the very end of Spacemacs initialization."
       ("/root" . "/home/yenda")
       ("/usr/src/app" . "/home/yenda/clash-backend"))
      (cider-preferred-build-tool . clojure-cli)
-     (cider-clojure-cli-global-options . "-A:dev:test")
+     (cider-clojure-cli-parameters . "-A:dev:test")
      (cider-ns-refresh-before-fn . "com.stuartsierra.component.repl/stop")
      (cider-ns-refresh-after-fn . "com.stuartsierra.component.repl/start")
      (cider-known-endpoints
@@ -693,7 +696,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package undo-tree toml-mode toc-org tide typescript-mode flycheck tagedit spaceline powerline smeargle slim-mode shell-pop scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe restart-emacs rbenv rake rainbow-delimiters racer pos-tip pyvenv pytest pyenv-mode py-isort pug-mode powershell popwin pip-requirements persp-mode pcre2el paradox orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-bullets open-junk-file nix-mode neotree multi-term move-text mmm-mode minitest markdown-toc magit-gitflow magit-popup macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint json-mode json-snatcher json-reformat js2-refactor js2-mode js-doc indent-guide hy-mode dash-functional hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-pydoc helm-projectile projectile helm-mode-manager helm-make helm-gitignore request helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haml-mode google-translate golden-ratio go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit git-commit transient evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump diminish define-word cython-mode csv-mode company-web web-completion-data company-statistics company-go go-mode company-anaconda company column-enforce-mode coffee-mode clojure-snippets clj-refactor hydra inflections multiple-cursors paredit lv clean-aindent-mode cider-eval-sexp-fu eval-sexp-fu cider sesman spinner queue pkg-info parseedn clojure-mode parseclj a epl chruby cargo markdown-mode rust-mode bundler inf-ruby bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup)))
+   '(yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toml-mode toc-org tide typescript-mode flycheck tagedit spaceline powerline smeargle slim-mode shell-pop scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe restart-emacs rbenv rake rainbow-delimiters racer pos-tip pyvenv pytest pyenv-mode py-isort pug-mode powershell popwin pip-requirements persp-mode pcre2el paradox orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-bullets open-junk-file nix-mode neotree multi-term move-text mmm-mode minitest markdown-toc magit-gitflow magit-popup macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint json-mode json-snatcher json-reformat js2-refactor js2-mode js-doc indent-guide hy-mode dash-functional hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-pydoc helm-projectile projectile helm-mode-manager helm-make helm-gitignore request helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haml-mode google-translate golden-ratio go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit git-commit transient evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump diminish define-word cython-mode csv-mode company-web web-completion-data company-statistics company-go go-mode company-anaconda company column-enforce-mode coffee-mode clojure-snippets clj-refactor hydra inflections multiple-cursors paredit lv clean-aindent-mode cider-eval-sexp-fu eval-sexp-fu cider sesman spinner queue pkg-info parseedn clojure-mode parseclj a epl chruby cargo markdown-mode rust-mode bundler inf-ruby bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
