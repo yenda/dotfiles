@@ -23,6 +23,9 @@
 (blink-cursor-mode 1)
 (electric-pair-mode 1)
 
+;; ask for gpg password in minibuffer instead of external window
+(setq epa-pinentry-mode 'loopback)
+
 ;; cleanup backups
 (setq
    backup-by-copying t      ; don't clobber symlinks
@@ -88,8 +91,11 @@
 (show-paren-mode t)
 (setq show-paren-style 'parenthesis)
 
-(use-package clojure-mode :after consult)
-(use-package cider :after consult)
+(use-package clojure-mode)
+(use-package cider
+  :config
+  ;; don't bind M-s it's used by consult!
+  (define-key cider-repl-mode-map (kbd "M-s") nil))
 
 (use-package lsp-mode :after clojure-mode 
   :config
@@ -130,7 +136,7 @@
 
 (use-package lsp-treemacs :after lsp-mode)
 
-(use-package consult-lsp :after lsp-mode consult
+(use-package consult-lsp :after lsp-mode
   :bind
   ("M-s f" . consult-lsp-symbols))
 
@@ -419,7 +425,27 @@ targets."
  '(custom-safe-themes
    '("7fd8b914e340283c189980cd1883dbdef67080ad1a3a9cc3df864ca53bdc89cf" default))
  '(safe-local-variable-values
-   '((cider-clojure-cli-parameters . "-A:dev:rad-dev:reveal -J-Dtrace")
+   '((elisp-lint-indent-specs
+      (if-let* . 2)
+      (when-let* . 1)
+      (let* . defun)
+      (nrepl-dbind-response . 2)
+      (cider-save-marker . 1)
+      (cider-propertize-region . 1)
+      (cider-map-repls . 1)
+      (cider--jack-in . 1)
+      (cider--make-result-overlay . 1)
+      (insert-label . defun)
+      (insert-align-label . defun)
+      (insert-rect . defun)
+      (cl-defun . 2)
+      (with-parsed-tramp-file-name . 2)
+      (thread-first . 0)
+      (thread-last . 0)
+      (transient-define-prefix . defmacro)
+      (transient-define-suffix . defmacro))
+     (checkdoc-package-keywords-flag)
+     (cider-clojure-cli-parameters . "-A:dev:rad-dev:reveal -J-Dtrace")
      (eval setenv "AWS_ACCESS_KEY_ID" "EXO03628b63df1311978b45bc3a")
      (eval setenv "AWS_SECRET_ACCESS_KEY" "OR2am2aDESikb1QSmuOen3a3m039X7J8WDXt5p9xeus")
      (eval setenv "AWS_REGION" "ch-dk-2")
