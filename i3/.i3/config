@@ -2,7 +2,7 @@ set $mod Mod4
 
 exec ~/dotfiles/screenlayout/desktop.sh
 
-font DejaVu Sans Mono Book 14
+font DejaVu Sans Mono Book 16
 
 new_window pixel 3
 hide_edge_borders both

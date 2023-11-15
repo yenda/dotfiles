@@ -79,6 +79,7 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 . ~/.bash_globals
 . ~/.bash_functions
 . ~/.bash_aliases
+. ~/.bash_npm_completion
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
@@ -112,11 +113,6 @@ export PATH=${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${ANDROID_H
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 export SHADOW_HOST=192.168.1.99
 export API_HOST=192.168.1.99
-
-# added for npm-completion https://github.com/Jephuff/npm-bash-completion
-PATH_TO_NPM_COMPLETION="/usr/bin/../lib/node_modules/npm-completion"
-source $PATH_TO_NPM_COMPLETION/npm-completion.sh
-source "/home/yenda/.rover/env"
 
 PATH_TO_NPM_COMPLETION="/home/yenda/node_modules/npm-completion"
 

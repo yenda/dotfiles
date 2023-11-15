@@ -87,3 +87,4 @@ source $ZSH/oh-my-zsh.sh
 # added for npm-completion https://github.com/Jephuff/npm-bash-completion
 PATH_TO_NPM_COMPLETION="/usr/bin/../lib/node_modules/npm-completion"
 source $PATH_TO_NPM_COMPLETION/npm-completion.sh
+PATH_TO_NPM_COMPLETION="/home/yenda/.nvm/versions/node/v20.9.0/lib/node_modules/npm-completion"

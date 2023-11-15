@@ -23,6 +23,16 @@
 (blink-cursor-mode 1)
 (electric-pair-mode 1)
 
+;; cleanup backups
+(setq
+   backup-by-copying t      ; don't clobber symlinks
+   backup-directory-alist
+    '(("." . "~/.saves"))    ; don't litter my fs tree
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   version-control t)       ; use versioned backups
+
 (defun force-delete-other-windows ()
   "Forcefully delete all other windows, regardless of their status."
   (interactive)
@@ -72,7 +82,8 @@
    :bind
    (:map puni-mode-map
 	 ("C-<left>" . puni-barf-forward)
-         ("C-<right>" . puni-slurp-forward)))
+         ("C-<right>" . puni-slurp-forward)
+	 ("M-s M-s" . 'puni-splice)))
 
 (show-paren-mode t)
 (setq show-paren-style 'parenthesis)
@@ -94,7 +105,8 @@
 	  lsp-ui-doc-show-with-cursor nil
 	  lsp-ui-doc-include-signature t
 	  lsp-ui-doc-alignment 'window
-	  lsp-lens-enable t)
+	  lsp-lens-enable t
+	  lsp-auto-guess-root t)
     
     (setq lsp-headerline-breadcrumb-enable nil
           lsp-modeline-code-actions-enable nil)
@@ -406,7 +418,10 @@ targets."
  '(custom-safe-themes
    '("7fd8b914e340283c189980cd1883dbdef67080ad1a3a9cc3df864ca53bdc89cf" default))
  '(safe-local-variable-values
-   '((toc-org-max-depth . 2)
+   '((eval setenv "AWS_ACCESS_KEY_ID" "EXO03628b63df1311978b45bc3a")
+     (eval setenv "AWS_SECRET_ACCESS_KEY" "OR2am2aDESikb1QSmuOen3a3m039X7J8WDXt5p9xeus")
+     (eval setenv "AWS_REGION" "ch-dk-2")
+     (toc-org-max-depth . 2)
      (org-list-indent-offset . 1)
      (eval progn
 	   (global-display-fill-column-indicator-mode t)
