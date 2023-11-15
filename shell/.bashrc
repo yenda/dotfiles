@@ -98,7 +98,7 @@ export AWS_VAULT_BACKEND=pass
 export AWS_VAULT_PASS_PREFIX=aws-vault
 
 export TERM=xterm-256color
-export PATH=$PATH:/home/yenda/bin
+export PATH=$PATH:/home/yenda/bin:/home/yenda/.rover/bin
 export EDITOR="emacsclient -c"
 
 /usr/bin/setxkbmap -option "caps:swapescape"
@@ -113,16 +113,12 @@ export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 export SHADOW_HOST=192.168.1.99
 export API_HOST=192.168.1.99
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/yenda/Downloads/google-cloud-sdk/path.bash.inc' ]; then . '/home/yenda/Downloads/google-cloud-sdk/path.bash.inc'; fi
+# added for npm-completion https://github.com/Jephuff/npm-bash-completion
+PATH_TO_NPM_COMPLETION="/usr/bin/../lib/node_modules/npm-completion"
+source $PATH_TO_NPM_COMPLETION/npm-completion.sh
+source "/home/yenda/.rover/env"
 
-# The next line enables shell command completion for gcloud.
-if [ -f '/home/yenda/Downloads/google-cloud-sdk/completion.bash.inc' ]; then . '/home/yenda/Downloads/google-cloud-sdk/completion.bash.inc'; fi
-
-export PATH=$PATH:/usr/local/go/bin:$HOME/flutter/bin
-
-# add Pulumi to the PATH
-export PATH=$PATH:$HOME/.pulumi/bin
+PATH_TO_NPM_COMPLETION="/home/yenda/node_modules/npm-completion"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

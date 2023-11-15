@@ -115,6 +115,7 @@ https://www.expressvpn.com/subscriptions
 
 * Install watchman
 
+#+BEGIN_SRC sh
 git clone https://github.com/facebook/watchman.git
 cd watchman
 git checkout v4.9.0  # the latest stable release
@@ -124,12 +125,15 @@ make
 sudo make install
 
 echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_user_watches && echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_queued_events && echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_user_instances && watchman shutdown-server && sudo sysctl -p
+#+END_SRC
 
 * Install nodejs
 
 https://github.com/nodesource/distributions/blob/master/README.md
 
 ** Using Ubuntu
+
+#+BEGIN_SRC sh
 curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt-get install -y nodejs
 sudo apt-get install gcc g++ make
@@ -139,7 +143,7 @@ sudo apt-get update && sudo apt-get install yarn
 
 yenda@project2501:~/clash$ sudo npm i -g npm-completion
 yenda@project2501:~/clash$ sudo npm-completion-setup 
-
+#+END_SRC
 
 * Streamdeck
 
@@ -170,4 +174,10 @@ yenda@project2501:~/clash$ sudo npm-completion-setup
   echo options hid_apple fnmode=2 | sudo tee -a /etc/modprobe.d/hid_apple.conf
   sudo update-initramfs -u -k all
   sudo reboot # optional
+#+END_SRC
+
+* Getting rid of that wierd input issue
+
+#+BEGIN_SRC sh
+gsettings set org.freedesktop.ibus.panel.emoji hotkey "@as []"
 #+END_SRC

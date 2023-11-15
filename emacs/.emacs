@@ -1,234 +1,421 @@
-(require 'package)
-(add-to-list 'package-archives
-	     '("melpa" . "http://melpa.org/packages/"))
+;; -*- lexical-binding: t; -*-
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-(package-initialize)
+(setq package-enable-at-startup nil)
+(setq use-package-always-ensure t)
 
-(defvar my-packages '(monokai-theme
-		      projectile
-		      company
-		      aggressive-indent
-		      magit
-		      helm
-
-		      markdown-mode
-		      mustache-mode
-		      
-		      smartparens
-		      rainbow-delimiters
-		      clojure-mode
-		      cider
-
-		      ruby-mode
-		      robe
-		      flymake-ruby
-
-		      page-break-lines
-		      ;;xquery-mode
-		      slime))
-
-(dolist (p my-packages)
-  (unless (package-installed-p p)
-    ;; TRADEOFF: less init time, more install time
-    (package-refresh-contents)
-    (package-install p)))
-
+;; cleanup UI
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (setq inhibit-splash-screen t)
+(blink-cursor-mode 1)
+(electric-pair-mode 1)
 
-(load-theme 'monokai t)
-
-(global-set-key (kbd "<f1>") (lambda() (interactive) (find-file (concat "~/org/daily/" (format-time-string "%Y%m%d") ".org"))))
-(global-set-key (kbd "<f2>") (lambda() (interactive) (find-file "~/org/todo.org")))
-(global-set-key (kbd "C-x C-g") 'magit-status)
-
-(setq
-   backup-by-copying t      ; don't clobber symlinks
-   backup-directory-alist
-    '(("." . "~/.saves"))    ; don't litter my fs tree
-   delete-old-versions t
-   kept-new-versions 6
-   kept-old-versions 2
-   version-control t)       ; use versioned backups
-
-;; HELM
-
-(require 'helm)
-(require 'helm-config)
-
-;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
-;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
-;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
-(global-set-key (kbd "C-c h") 'helm-command-prefix)
-(global-unset-key (kbd "C-x c"))
-
-(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
-(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB work in terminal
-(define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
-
-(when (executable-find "curl")
-  (setq helm-google-suggest-use-curl-p t))
-
-(setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
-      helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
-      helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
-      helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
-      helm-ff-file-name-history-use-recentf t
-      helm-echo-input-in-header-line t)
-
-(defun spacemacs//helm-hide-minibuffer-maybe ()
-  "Hide minibuffer in Helm session if we use the header line as input field."
-  (when (with-helm-buffer helm-echo-input-in-header-line)
-    (let ((ov (make-overlay (point-min) (point-max) nil nil t)))
-      (overlay-put ov 'window (selected-window))
-      (overlay-put ov 'face
-                   (let ((bg-color (face-background 'default nil)))
-                     `(:background ,bg-color :foreground ,bg-color)))
-      (setq-local cursor-type nil))))
-
-(add-hook 'helm-minibuffer-set-up-hook
-          'spacemacs//helm-hide-minibuffer-maybe)
-
-(setq helm-autoresize-max-height 0)
-(setq helm-autoresize-min-height 20)
-(helm-autoresize-mode 1)
-
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
-(global-set-key (kbd "C-x b") 'helm-mini)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
-
-(setq helm-M-x-fuzzy-match t
-      helm-buffers-fuzzy-matching t
-      helm-recentf-fuzzy-match    t)
-
-(when (executable-find "ack-grep")
-  (setq helm-grep-default-command "ack-grep -Hn --no-group --no-color %e %p %f"
-        helm-grep-default-recurse-command "ack-grep -H --no-group --no-color %e %p %f"))
-
-(helm-mode 1)
-
-;; LISP
-
-(require 'smartparens-config)
-(show-paren-mode 1)
-(setq show-paren-style 'mixed)
-
-;; COMMON LISP
-
-(setq inferior-lisp-program "/bin/sbcl"
-      lisp-indent-function 'common-lisp-indent-function
-      slime-complete-symbol-function 'slime-fuzzy-complete-symbol
-      slime-startup-animation nil)
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/slime/")
-
-(require 'slime)
-(slime-setup '(slime-fancy))
-
-;; CLOJURE
-
-;; (require 'cider-any)
-;; (require 'cider-any-uruk)
-
-;; (add-hook 'xquery-mode-hook 'cider-any-mode)
-
-;; (setq cider-any-uruk-uri "xdbc://localhost:8889/"
-;;       cider-any-uruk-user "admin"
-;;       cider-any-uruk-password "admin")
-
-(add-hook 'clojure-mode-hook #'smartparens-mode)
-(add-hook 'clojure-mode-hook #'aggressive-indent-mode)
-(add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
-;; clojure mode hooks
-
-(defun lambdawerk-cleanup-buffer ()
-	"clean up buffer"
+(defun force-delete-other-windows ()
+  "Forcefully delete all other windows, regardless of their status."
   (interactive)
-  (untabify (point-min) (point-max))
-  (delete-trailing-whitespace))
+  (mapc (lambda (window)
+          (unless (eq window (selected-window)) ; Keep the current window
+            (ignore-errors (delete-window window)))) ; Ignore errors that occur when trying to delete a window
+        (window-list)))
 
-(defun lambdawerk-indent ()
-	(define-clojure-indent
-		(defui '(1 nil nil (1)))
-		(with 'defun)))
+(global-set-key (kbd "C-x 1") 'force-delete-other-windows)
+(global-set-key (kbd "<f1>") (lambda() (interactive) (find-file "/home/yenda/brian/src/dev/development.clj")))
+(global-set-key (kbd "<f2>") (lambda() (interactive) (find-file "~/org/todo.org")))
 
-(add-hook 'clojure-mode-hook
-	  (lambda ()
-	    (lambdawerk-indent)
-	    (add-hook 'before-save-hook 'lambdawerk-cleanup-buffer t t)))
+(use-package straight
+  :custom
+  (straight-use-package-by-default t))
 
-(global-set-key (kbd "C-<right>") 'sp-forward-slurp-sexp)
-(global-set-key (kbd "C-<left>") 'sp-forward-barf-sexp)
+(use-package spacemacs-theme
+  :config
+  (load-theme 'spacemacs-dark t))
 
-;; RUBY
 
-(add-to-list 'auto-mode-alist
-	     '("\\.\\(?:cap\\|gemspec\\|irbrc\\|gemrc\\|rake\\|rb\\|ru\\|thor\\)\\'" . ruby-mode))
-(add-to-list 'auto-mode-alist
-	     '("\\(?:Brewfile\\|Capfile\\|Gemfile\\(?:\\.[a-zA-Z0-9._-]+\\)?\\|[rR]akefile\\)\\'" . ruby-mode))
-(add-hook 'ruby-mode-hook 'robe-mode)
-(eval-after-load 'company
-  '(push 'company-robe company-backends))
+;; my packages
+(use-package magit)
+(use-package git-link)
 
-(require 'flymake-ruby)
-(add-hook 'ruby-mode-hook 'flymake-ruby-load)
+(use-package which-key
+  :config
+  (which-key-mode))
 
-;; ORGMODE
+(use-package orderless :after vertico
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
 
-(setq org-src-fontify-natively t)
-(defun my/org-insert-src-block (src-code-type)
-  "Insert a `SRC-CODE-TYPE' type source code block in org-mode."
-  (interactive
-   (let ((src-code-types
-          '("emacs-lisp" "python" "C" "sh" "java" "js" "clojure" "C++" "css"
-            "calc" "dot" "gnuplot" "ledger" "R" "sass" "screen" "sql" "awk"
-            "ditaa" "haskell" "latex" "lisp" "matlab" "org" "perl" "ruby"
-            "sqlite" "rust" "scala" "golang")))
-     (list (ido-completing-read "Source code type: " src-code-types))))
+(use-package rainbow-delimiters
+  :init
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
+(use-package puni
+   :defer t
+   :init
+   ;; The autoloads of Puni are set up so you can enable `puni-mode` or
+   ;; `puni-global-mode` before `puni` is actually loaded. Only after you press
+   ;; any key that calls Puni commands, it's loaded.
+   (puni-global-mode)
+   (add-hook 'term-mode-hook #'puni-disable-puni-mode)
+   :bind
+   (:map puni-mode-map
+	 ("C-<left>" . puni-barf-forward)
+         ("C-<right>" . puni-slurp-forward)))
+
+(show-paren-mode t)
+(setq show-paren-style 'parenthesis)
+
+(use-package clojure-mode)
+(use-package cider)
+
+(use-package lsp-mode :after clojure-mode
+  :config
+  (add-hook 'cider-mode-hook
+            (lambda ()
+              (define-key cider-mode-map (kbd "M-c M-c")  'cider-eval-print-last-sexp)
+              (define-key cider-mode-map (kbd "C-c M-r") 'cider-ns-refresh)))
   (progn
-    (newline)
-    (insert (format "#+BEGIN_SRC %s\n" src-code-type))
-    (newline)
-    (insert "#+END_SRC\n")
-    (previous-line 2)
-    (org-edit-src-code)))
+    (setq lsp-enable-symbol-highlighting t
+	  lsp-enable-indentation t
+	  lsp-ui-doc-enable t
+	  lsp-modeline-diagnostics-enable t
+	  lsp-ui-doc-show-with-cursor nil
+	  lsp-ui-doc-include-signature t
+	  lsp-ui-doc-alignment 'window
+	  lsp-lens-enable t)
+    
+    (setq lsp-headerline-breadcrumb-enable nil
+          lsp-modeline-code-actions-enable nil)
+    (lsp-modeline-code-actions-mode -1)
+    (setq lsp-completion-provider nil)
+    (lsp-headerline-breadcrumb-mode -1)
+    (add-hook 'clojure-mode-hook #'lsp)
+    (add-hook 'clojurescript-mode-hook #'lsp)
+    (add-hook 'clojurec-mode-hook #'lsp)
+    (add-hook 'scss-mode #'lsp)
+    (define-key lsp-mode-map (kbd "M-o") lsp-command-map)
+    (add-hook 'lsp-mode-hook
+	      (lambda ()
+                (add-hook 'before-save-hook
+                          (lambda ()
+                            (when (derived-mode-p 'prog-mode)
+                              (lsp-format-buffer)))
+                          nil t)))))
 
-(with-eval-after-load 'org
-  (define-key org-mode-map (kbd "C-c s e") 'org-edit-src-code)
-  (define-key org-mode-map (kbd "C-c s i") 'my/org-insert-src-block)
-  (define-key org-mode-map (kbd "C-c C-x i") 'org-clock-in))
+(use-package lsp-ui :after lsp-mode)
 
-;; Babel
+(use-package lsp-treemacs :after lsp-mode)
 
-(require 'ob-clojure)
-(setq org-babel-clojure-backend 'cider)
+(use-package consult-lsp :after lsp-mode consult
+  :bind
+  ("M-s f" . consult-lsp-symbols))
 
-;; active Org-babel languages
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '(;; other Babel languages
-   (ruby . t)))
+(setq vc-follow-symlinks t)
 
-(defun my-org-confirm-babel-evaluate (lang body)
-  (not (string= lang "ruby")))  ; don't ask for ditaa
-(setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
+(use-package vertico
+  :init
+  (vertico-mode)
 
-;; CUSTOM
+  ;; Different scroll margin
+  ;; (setq vertico-scroll-margin 0)
 
-(add-hook 'after-init-hook 'global-company-mode)
+  ;; Show more candidates
+  (setq vertico-count 20)
+
+  ;; Grow and shrink the Vertico minibuffer
+  (setq vertico-resize nil)
+
+  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+  (setq vertico-cycle t)
+  )
+
+;; Persist history over Emacs restarts. Vertico sorts by history position.
+(use-package savehist
+  :init
+  (savehist-mode))
+
+;; Example configuration for Consult
+(use-package consult
+  ;; Replace bindings. Lazily loaded due by `use-package'.
+  :bind (;; C-c bindings in `mode-specific-map'
+         ("C-c M-x" . consult-mode-command)
+         ("C-c h" . consult-history)
+         ("C-c k" . consult-kmacro)
+         ("C-c m" . consult-man)
+         ("C-c i" . consult-info)
+         ([remap Info-search] . consult-info)
+         ;; C-x bindings in `ctl-x-map'
+         ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+         ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+         ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+         ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+         ("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
+         ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+         ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+         ;; Custom M-# bindings for fast register access
+         ("M-#" . consult-register-load)
+         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+         ("C-M-#" . consult-register)
+         ;; Other custom bindings
+         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+         ;; M-g bindings in `goto-map'
+         ("M-g e" . consult-compile-error)
+         ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+         ("M-g g" . consult-goto-line)             ;; orig. goto-line
+         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+         ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+         ("M-g m" . consult-mark)
+         ("M-g k" . consult-global-mark)
+         ("M-g i" . consult-imenu)
+         ("M-g I" . consult-imenu-multi)
+         ;; M-s bindings in `search-map'
+         ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+         ("M-s c" . consult-locate)
+         ("M-s g" . consult-grep)
+         ("M-s G" . consult-git-grep)
+         ("M-s r" . consult-ripgrep)
+         ("M-s l" . consult-line)
+         ("M-s L" . consult-line-multi)
+         ("M-s k" . consult-keep-lines)
+         ("M-s u" . consult-focus-lines)
+         ;; Isearch integration
+         ("M-s e" . consult-isearch-history)
+         :map isearch-mode-map
+         ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+         ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+         ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+         ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+         ;; Minibuffer history
+         :map minibuffer-local-map
+         ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+         ("M-r" . consult-history))                ;; orig. previous-matching-history-element
+
+  ;; Enable automatic preview at point in the *Completions* buffer. This is
+  ;; relevant when you use the default completion UI.
+  :hook (completion-list-mode . consult-preview-at-point-mode)
+
+  ;; The :init configuration is always executed (Not lazy)
+  :init
+
+  ;; Optionally configure the register formatting. This improves the register
+  ;; preview for `consult-register', `consult-register-load',
+  ;; `consult-register-store' and the Emacs built-ins.
+  (setq register-preview-delay 0.5
+        register-preview-function #'consult-register-format)
+
+  ;; Optionally tweak the register preview window.
+  ;; This adds thin lines, sorting and hides the mode line of the window.
+  (advice-add #'register-preview :override #'consult-register-window)
+
+  ;; Use Consult to select xref locations with preview
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+
+  ;; Configure other variables and modes in the :config section,
+  ;; after lazily loading the package.
+  :config
+
+  ;; Optionally configure preview. The default value
+  ;; is 'any, such that any key triggers the preview.
+  (setq consult-preview-key 'any)
+  ;; (setq consult-preview-key "M-.")
+  ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
+  ;; For some commands and buffer sources it is useful to configure the
+  ;; :preview-key on a per-command basis using the `consult-customize' macro.
+  (consult-customize
+   consult-find consult-theme :preview-key '(:debounce 0.2 any)
+   consult-ripgrep consult-git-grep consult-grep
+   consult-bookmark consult-recent-file consult-xref
+   consult--source-bookmark consult--source-file-register
+   consult--source-recent-file consult--source-project-recent-file
+   ;; :preview-key "M-."
+   :preview-key '(:debounce 0.4 any))
+
+  ;; Optionally configure the narrowing key.
+  ;; Both < and C-+ work reasonably well.
+  (setq consult-narrow-key ">")
+  (setq consult-widen-key "<")
+
+  ;; Optionally make narrowing help available in the minibuffer.
+  ;; You may want to use `embark-prefix-help-command' or which-key instead.
+  (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help)
+
+  ;; By default `consult-project-function' uses `project-root' from project.el.
+  ;; Optionally configure a different project root function.
+  ;;;; 1. project.el (the default)
+  ;; (setq consult-project-function #'consult--default-project--function)
+  ;;;; 2. vc.el (vc-root-dir)
+  ;; (setq consult-project-function (lambda (_) (vc-root-dir)))
+  ;;;; 3. locate-dominating-file
+  ;; (setq consult-project-function (lambda (_) (locate-dominating-file "." ".git")))
+  ;;;; 4. projectile.el (projectile-project-root)
+  ;; (autoload 'projectile-project-root "projectile")
+  ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
+  ;;;; 5. No project support
+  ;; (setq consult-project-function nil)
+  )
+
+(use-package marginalia
+  :ensure t
+  :config
+  (marginalia-mode))
+
+(use-package embark
+  :ensure t
+
+  :bind
+  (("M-o" . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+
+  :init
+
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  ;; Show the Embark target at point via Eldoc.  You may adjust the Eldoc
+  ;; strategy, if you want to see the documentation from multiple providers.
+  (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+
+  :config
+  (defun embark-which-key-indicator ()
+    "An embark indicator that displays keymaps using which-key.
+The which-key help message will show the type and value of the
+current target followed by an ellipsis if there are further
+targets."
+    (lambda (&optional keymap targets prefix)
+      (if (null keymap)
+          (which-key--hide-popup-ignore-command)
+	(which-key--show-keymap
+	 (if (eq (plist-get (car targets) :type) 'embark-become)
+             "Become"
+           (format "Act on %s '%s'%s"
+                   (plist-get (car targets) :type)
+                   (embark--truncate-target (plist-get (car targets) :target))
+                   (if (cdr targets) "…" "")))
+	 (if prefix
+             (pcase (lookup-key keymap prefix 'accept-default)
+               ((and (pred keymapp) km) km)
+               (_ (key-binding prefix 'accept-default)))
+           keymap)
+	 nil nil t (lambda (binding)
+                     (not (string-suffix-p "-argument" (cdr binding))))))))
+
+  (setq embark-indicators
+	'(embark-which-key-indicator
+	  embark-highlight-indicator
+	  embark-isearch-highlight-indicator))
+
+  (defun embark-hide-which-key-indicator (fn &rest args)
+    "Hide the which-key indicator immediately when using the completing-read prompter."
+    (which-key--hide-popup-ignore-command)
+    (let ((embark-indicators
+           (remq #'embark-which-key-indicator embark-indicators)))
+      (apply fn args)))
+
+  (advice-add #'embark-completing-read-prompter
+              :around #'embark-hide-which-key-indicator)
+
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+;; Consult users will also want the embark-consult package.
+(use-package embark-consult
+  :ensure t ; only need to install it, embark loads it after consult if found
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
+(use-package corfu
+  ;; Optional customizations
+  :custom
+  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  ;; (corfu-auto t)                 ;; Enable auto completion
+  ;; (corfu-separator ?\s)          ;; Orderless field separator
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
+
+  ;; Enable Corfu only for certain modes.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+
+  ;; Recommended: Enable Corfu globally.  This is recommended since Dabbrev can
+  ;; be used globally (M-/).  See also the customization variable
+  ;; `global-corfu-modes' to exclude certain modes.
+  :init
+  (global-corfu-mode))
+
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+  (defun crm-indicator (args)
+    (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  (setq read-extended-command-predicate
+        #'command-completion-default-include-p)
+
+  ;; Corfu
+  (setq completion-cycle-threshold 3)
+  (setq tab-always-indent 'complete)
+
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+  
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t))
+
+;; fix the C-z hanging and replace it by undo
+(global-unset-key (kbd "C-z"))
+(global-set-key (kbd "C-x C-g") 'magit-status)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (slime cider clojure-mode projectile monokai-theme))))
+ '(custom-safe-themes
+   '("7fd8b914e340283c189980cd1883dbdef67080ad1a3a9cc3df864ca53bdc89cf" default))
+ '(safe-local-variable-values
+   '((toc-org-max-depth . 2)
+     (org-list-indent-offset . 1)
+     (eval progn
+	   (global-display-fill-column-indicator-mode t)
+	   (make-variable-buffer-local 'cider-jack-in-nrepl-middlewares)
+	   (add-to-list 'cider-jack-in-nrepl-middlewares "shadow.cljs.devtools.server.nrepl/middleware"))
+     (cider-ns-refresh-after-fn . "development/restart"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(helm-selection ((t (:inherit bold :background "SlateGray4" :underline nil))))
- '(helm-source-header ((t (:background "dark sea green" :foreground "#272822" :underline nil)))))
+ '(show-paren-match ((t (:background "chocolate1" :foreground "#000000" :underline nil)))))
