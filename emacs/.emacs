@@ -88,10 +88,10 @@
 (show-paren-mode t)
 (setq show-paren-style 'parenthesis)
 
-(use-package clojure-mode)
-(use-package cider)
+(use-package clojure-mode :after consult)
+(use-package cider :after consult)
 
-(use-package lsp-mode :after clojure-mode
+(use-package lsp-mode :after clojure-mode 
   :config
   (add-hook 'cider-mode-hook
             (lambda ()
@@ -158,7 +158,6 @@
   :init
   (savehist-mode))
 
-;; Example configuration for Consult
 (use-package consult
   ;; Replace bindings. Lazily loaded due by `use-package'.
   :bind (;; C-c bindings in `mode-specific-map'
@@ -377,6 +376,8 @@ targets."
   :init
   (global-corfu-mode))
 
+(use-package wgrep)
+
 ;; A few more useful configurations...
 (use-package emacs
   :init
@@ -418,7 +419,8 @@ targets."
  '(custom-safe-themes
    '("7fd8b914e340283c189980cd1883dbdef67080ad1a3a9cc3df864ca53bdc89cf" default))
  '(safe-local-variable-values
-   '((eval setenv "AWS_ACCESS_KEY_ID" "EXO03628b63df1311978b45bc3a")
+   '((cider-clojure-cli-parameters . "-A:dev:rad-dev:reveal -J-Dtrace")
+     (eval setenv "AWS_ACCESS_KEY_ID" "EXO03628b63df1311978b45bc3a")
      (eval setenv "AWS_SECRET_ACCESS_KEY" "OR2am2aDESikb1QSmuOen3a3m039X7J8WDXt5p9xeus")
      (eval setenv "AWS_REGION" "ch-dk-2")
      (toc-org-max-depth . 2)
