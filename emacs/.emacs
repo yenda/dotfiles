@@ -28,8 +28,8 @@
       treemacs-space-between-root-nodes nil
       company-minimum-prefix-length 1)
 
-;; ask for gpg password in minibuffer instead of external window
-(setq epa-pinentry-mode 'loopback)
+;; gpg password request in minibuffer
+(setq epg-pinentry-mode 'loopback)
 
 ;; cleanup backups
 (setq
@@ -64,6 +64,8 @@
 
 ;; my packages
 (use-package magit)
+(use-package forge :after magit)
+(use-package magit-todos :after magit)
 (use-package git-link)
 
 (use-package which-key
@@ -102,7 +104,7 @@
   ;; don't bind M-s it's used by consult!
   (define-key cider-repl-mode-map (kbd "M-s") nil))
 
-(use-package lsp-mode :after clojure-mode corfu
+(use-package lsp-mode :after clojure-mode corfu consult
   :config
   (add-hook 'cider-mode-hook
             (lambda ()
@@ -144,7 +146,8 @@
 
 (use-package consult-lsp :after lsp-mode
   :bind
-  ("M-s f" . consult-lsp-symbols))
+  ("M-s F" . consult-lsp-symbols)
+  ("M-s f" . consult-lsp-file-symbols))
 
 (setq vc-follow-symlinks t)
 
@@ -430,6 +433,7 @@ targets."
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    '("7fd8b914e340283c189980cd1883dbdef67080ad1a3a9cc3df864ca53bdc89cf" default))
+ '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'")
  '(safe-local-variable-values
    '((elisp-lint-indent-specs
       (if-let* . 2)
@@ -461,7 +465,8 @@ targets."
 	   (global-display-fill-column-indicator-mode t)
 	   (make-variable-buffer-local 'cider-jack-in-nrepl-middlewares)
 	   (add-to-list 'cider-jack-in-nrepl-middlewares "shadow.cljs.devtools.server.nrepl/middleware"))
-     (cider-ns-refresh-after-fn . "development/restart"))))
+     (cider-ns-refresh-after-fn . "development/restart")))
+ '(warning-suppress-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -39,12 +39,21 @@ Get the code from the gnu [[http://ftp.gnu.org/gnu/emacs/][forge]]
   tar -xfv emacs-*
   ./autogen.sh    # not needed when installing from tarball
   cd emacs-*
-  sudo apt-get install libgccjit-12-dev
-  ./configure --with-tree-sitter --with-native-compilation
+  sudo apt-get install libgccjit-12-dev imagemagick libmagickwand-dev libwebkit2gtk-4.1-dev libjansson-dev
+  CFLAGS='-march=native -O3' ./configure \
+	--with-modules \
+	--with-xwidgets \
+	--with-mailutils \
+	--with-imagemagick \
+	--with-native-compilation=aot \
+	--with-json \
+	--with-tree-sitter
   make
   sudo make install
 #+END_SRC
 
+
+# --with-pgtk \ only if I use wayland one day
 
 * Install docker
 
