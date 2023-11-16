@@ -23,6 +23,11 @@
 (blink-cursor-mode 1)
 (electric-pair-mode 1)
 
+(setq gc-cons-threshold (* 100 1024 1024)
+      read-process-output-max (* 1024 1024)
+      treemacs-space-between-root-nodes nil
+      company-minimum-prefix-length 1)
+
 ;; ask for gpg password in minibuffer instead of external window
 (setq epa-pinentry-mode 'loopback)
 
@@ -97,7 +102,7 @@
   ;; don't bind M-s it's used by consult!
   (define-key cider-repl-mode-map (kbd "M-s") nil))
 
-(use-package lsp-mode :after clojure-mode 
+(use-package lsp-mode :after clojure-mode corfu
   :config
   (add-hook 'cider-mode-hook
             (lambda ()
@@ -112,7 +117,8 @@
 	  lsp-ui-doc-include-signature t
 	  lsp-ui-doc-alignment 'window
 	  lsp-lens-enable t
-	  lsp-auto-guess-root t)
+	  lsp-auto-guess-root t
+	  lsp-log-io t)
     
     (setq lsp-headerline-breadcrumb-enable nil
           lsp-modeline-code-actions-enable nil)
