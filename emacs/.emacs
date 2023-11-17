@@ -471,6 +471,27 @@ targets."
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "C-x C-g") 'magit-status)
 
+(defun my/magit-todos-find-todo ()
+  "Go to todo item read from `magit-todos' list using `consult--read'."
+  (interactive)
+  (let* ((candidates (when-let* ((items (funcall magit-todos-scanner :sync t
+                                                 :directory (funcall consult-project-function t)
+                                                 :depth magit-todos-depth)))
+                       (cl-loop for item in items
+                                collect (magit-todos-item-cons item))))
+         (strings (mapcar #'car candidates))
+         (choice (consult--read strings
+                                :prompt "TODO: "
+                                :state
+                                (let ((preview (consult--jump-preview)))
+                                  (lambda (action cand)
+                                    ;; Only preview simple menu items which are markers,
+                                    ;; in order to avoid any bad side effects.
+                                    (funcall preview action (and (markerp (cdr cand)) (cdr cand)))))
+                                :sort t))  ; Optional: sorts the candidates
+         (item (alist-get choice candidates nil nil #'equal)))
+    (magit-todos-jump-to-item :item item)))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -480,7 +501,17 @@ targets."
    '("7fd8b914e340283c189980cd1883dbdef67080ad1a3a9cc3df864ca53bdc89cf" default))
  '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'")
  '(safe-local-variable-values
-   '((elisp-lint-indent-specs
+   '((eval setenv "CLASH_STAGE" "local")
+     (eval setenv "AWS_LOCAL_SQS" "true")
+     (eval setenv "AWS_REGION" "eu-west-2")
+     (cider-print-options
+      (("print-length" nil)))
+     (cider-print-fn . puget)
+     (cider-ns-refresh-before-fn . "com.stuartsierra.component.repl/stop")
+     (cider-ns-refresh-after-fn . "dev/setup-and-start")
+     (cider-known-endpoints
+      ("localhost" "9656"))
+     (elisp-lint-indent-specs
       (if-let* . 2)
       (when-let* . 1)
       (let* . defun)
