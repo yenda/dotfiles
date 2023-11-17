@@ -28,18 +28,29 @@
       treemacs-space-between-root-nodes nil
       company-minimum-prefix-length 1)
 
-;; gpg password request in minibuffer
-(setq epg-pinentry-mode 'loopback)
+(defun yenda-cleanup-buffer ()
+  "clean up buffer"
+  (interactive)
+  (untabify (point-min) (point-max))
+  (delete-trailing-whitespace))
+
+(setq show-trailing-whitespace t)
 
 ;; cleanup backups
+(defvar autosave-dir
+  (concat "/home/" (user-login-name) "/.emacs-autosaves/"))
+
+(make-directory autosave-dir t)
+
 (setq
-   backup-by-copying t      ; don't clobber symlinks
-   backup-directory-alist
-    '(("." . "~/.saves"))    ; don't litter my fs tree
-   delete-old-versions t
-   kept-new-versions 6
-   kept-old-versions 2
-   version-control t)       ; use versioned backups
+ backup-by-copying t      ; don't clobber symlinks
+ auto-save-file-name-transforms `((".*" ,(expand-file-name "\\2" autosave-dir) t))
+ backup-directory-alist `(("." . ,autosave-dir))    ; don't litter my fs tree
+ delete-old-versions t
+ kept-new-versions 6
+ kept-old-versions 2
+ ;; use versioned backups
+ version-control t)
 
 (defun force-delete-other-windows ()
   "Forcefully delete all other windows, regardless of their status."
@@ -65,7 +76,8 @@
 ;; my packages
 (use-package magit)
 (use-package forge :after magit)
-(use-package magit-todos :after magit)
+(use-package magit-todos :after magit
+  :config (magit-todos-mode 1))
 (use-package git-link)
 
 (use-package which-key
@@ -82,18 +94,18 @@
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 (use-package puni
-   :defer t
-   :init
-   ;; The autoloads of Puni are set up so you can enable `puni-mode` or
-   ;; `puni-global-mode` before `puni` is actually loaded. Only after you press
-   ;; any key that calls Puni commands, it's loaded.
-   (puni-global-mode)
-   (add-hook 'term-mode-hook #'puni-disable-puni-mode)
-   :bind
-   (:map puni-mode-map
-	 ("C-<left>" . puni-barf-forward)
-         ("C-<right>" . puni-slurp-forward)
-	 ("M-s M-s" . 'puni-splice)))
+  :defer t
+  :init
+  ;; The autoloads of Puni are set up so you can enable `puni-mode` or
+  ;; `puni-global-mode` before `puni` is actually loaded. Only after you press
+  ;; any key that calls Puni commands, it's loaded.
+  (puni-global-mode)
+  (add-hook 'term-mode-hook #'puni-disable-puni-mode)
+  :bind
+  (:map puni-mode-map
+        ("C-<left>" . puni-barf-forward)
+        ("C-<right>" . puni-slurp-forward)
+        ("M-s M-s" . 'puni-splice)))
 
 (show-paren-mode t)
 (setq show-paren-style 'parenthesis)
@@ -112,20 +124,20 @@
               (define-key cider-mode-map (kbd "C-c M-r") 'cider-ns-refresh)))
   (progn
     (setq lsp-enable-symbol-highlighting t
-	  lsp-enable-indentation t
-	  lsp-ui-doc-enable t
-	  lsp-modeline-diagnostics-enable t
-	  lsp-ui-doc-show-with-cursor nil
-	  lsp-ui-doc-include-signature t
-	  lsp-ui-doc-alignment 'window
-	  lsp-lens-enable t
-	  lsp-auto-guess-root t
-	  lsp-log-io t)
-    
+          lsp-enable-indentation t
+          lsp-ui-doc-enable t
+          lsp-modeline-diagnostics-enable t
+          lsp-ui-doc-show-with-cursor nil
+          lsp-ui-doc-include-signature t
+          lsp-ui-doc-alignment 'window
+          lsp-lens-enable t
+          lsp-auto-guess-root t
+          lsp-log-io t)
+
     (setq lsp-headerline-breadcrumb-enable nil
           lsp-modeline-code-actions-enable nil)
     (lsp-modeline-code-actions-mode -1)
-    (setq lsp-completion-provider nil)
+    (setq lsp-completion-provider :none)
     (lsp-headerline-breadcrumb-mode -1)
     (add-hook 'clojure-mode-hook #'lsp)
     (add-hook 'clojurescript-mode-hook #'lsp)
@@ -133,7 +145,7 @@
     (add-hook 'scss-mode #'lsp)
     (define-key lsp-mode-map (kbd "M-o") lsp-command-map)
     (add-hook 'lsp-mode-hook
-	      (lambda ()
+              (lambda ()
                 (add-hook 'before-save-hook
                           (lambda ()
                             (when (derived-mode-p 'prog-mode)
@@ -211,7 +223,7 @@
          ("M-s c" . consult-locate)
          ("M-s g" . consult-grep)
          ("M-s G" . consult-git-grep)
-         ("M-s r" . consult-ripgrep)
+         ("M-s r" . my/consult-ripgrep-region-or-prompt)
          ("M-s l" . consult-line)
          ("M-s L" . consult-line-multi)
          ("M-s k" . consult-keep-lines)
@@ -252,6 +264,14 @@
   ;; Configure other variables and modes in the :config section,
   ;; after lazily loading the package.
   :config
+
+  (defun my/consult-ripgrep-region-or-prompt ()
+    "Use `consult-ripgrep' to search for the current region if active, or prompt otherwise, in the project directory."
+    (interactive)
+    (let ((dir (funcall consult-project-function t)))
+      (if (use-region-p)
+          (consult-ripgrep dir (buffer-substring-no-properties (region-beginning) (region-end)))
+        (consult-ripgrep dir))))
 
   ;; Optionally configure preview. The default value
   ;; is 'any, such that any key triggers the preview.
@@ -325,25 +345,25 @@ targets."
     (lambda (&optional keymap targets prefix)
       (if (null keymap)
           (which-key--hide-popup-ignore-command)
-	(which-key--show-keymap
-	 (if (eq (plist-get (car targets) :type) 'embark-become)
+        (which-key--show-keymap
+         (if (eq (plist-get (car targets) :type) 'embark-become)
              "Become"
            (format "Act on %s '%s'%s"
                    (plist-get (car targets) :type)
                    (embark--truncate-target (plist-get (car targets) :target))
                    (if (cdr targets) "…" "")))
-	 (if prefix
+         (if prefix
              (pcase (lookup-key keymap prefix 'accept-default)
                ((and (pred keymapp) km) km)
                (_ (key-binding prefix 'accept-default)))
            keymap)
-	 nil nil t (lambda (binding)
+         nil nil t (lambda (binding)
                      (not (string-suffix-p "-argument" (cdr binding))))))))
 
   (setq embark-indicators
-	'(embark-which-key-indicator
-	  embark-highlight-indicator
-	  embark-isearch-highlight-indicator))
+        '(embark-which-key-indicator
+          embark-highlight-indicator
+          embark-isearch-highlight-indicator))
 
   (defun embark-hide-which-key-indicator (fn &rest args)
     "Hide the which-key indicator immediately when using the completing-read prompter."
@@ -393,6 +413,17 @@ targets."
 
 (use-package wgrep)
 
+(use-package eat
+  :straight (eat :files (:defaults "terminfo"
+                                   "integration"))
+  :bind (("M-RET" . eat-project)
+         :map project-prefix-map
+         ("t" . eat-project))
+  :hook (eshell-load . eat-eshell-mode)
+  :config (progn
+            (setq eat-kill-buffer-on-exit t)
+            (setq eshell-visual-commands nil)))
+
 ;; A few more useful configurations...
 (use-package emacs
   :init
@@ -418,9 +449,23 @@ targets."
   (setq minibuffer-prompt-properties
         '(read-only t cursor-intangible t face minibuffer-prompt))
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
-  
+
   ;; Enable recursive minibuffers
   (setq enable-recursive-minibuffers t))
+
+(defun indent-buffer ()
+  (interactive)
+  (save-excursion
+    (indent-region (point-min) (point-max) nil)))
+
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook
+                      (lambda ()
+                        (interactive)
+                        (indent-buffer)
+                        (yenda-cleanup-buffer))
+                      t t)))
 
 ;; fix the C-z hanging and replace it by undo
 (global-unset-key (kbd "C-z"))
@@ -462,9 +507,9 @@ targets."
      (toc-org-max-depth . 2)
      (org-list-indent-offset . 1)
      (eval progn
-	   (global-display-fill-column-indicator-mode t)
-	   (make-variable-buffer-local 'cider-jack-in-nrepl-middlewares)
-	   (add-to-list 'cider-jack-in-nrepl-middlewares "shadow.cljs.devtools.server.nrepl/middleware"))
+           (global-display-fill-column-indicator-mode t)
+           (make-variable-buffer-local 'cider-jack-in-nrepl-middlewares)
+           (add-to-list 'cider-jack-in-nrepl-middlewares "shadow.cljs.devtools.server.nrepl/middleware"))
      (cider-ns-refresh-after-fn . "development/restart")))
  '(warning-suppress-types '((comp))))
 (custom-set-faces
