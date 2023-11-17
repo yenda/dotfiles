@@ -116,7 +116,7 @@
   ;; don't bind M-s it's used by consult!
   (define-key cider-repl-mode-map (kbd "M-s") nil))
 
-(use-package lsp-mode :after clojure-mode corfu consult
+(use-package lsp-mode
   :config
   (add-hook 'cider-mode-hook
             (lambda ()

@@ -99,7 +99,6 @@ export AWS_VAULT_BACKEND=pass
 export AWS_VAULT_PASS_PREFIX=aws-vault
 
 export TERM=xterm-256color
-export PATH=$PATH:/home/yenda/bin:/home/yenda/.rover/bin
 export EDITOR="emacsclient -c"
 
 /usr/bin/setxkbmap -option "caps:swapescape"
