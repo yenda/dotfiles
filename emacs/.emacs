@@ -116,6 +116,16 @@
   ;; don't bind M-s it's used by consult!
   (define-key cider-repl-mode-map (kbd "M-s") nil))
 
+(use-package clj-refactor :after cider
+  :config
+  (setq cljr-favor-prefix-notation)
+  (add-hook 'cider-mode-hook
+            (lambda ()
+              (clj-refactor-mode 1)
+              (yas-minor-mode 1) ; for adding require/use/import statements
+              ;; This choice of keybinding leaves cider-macroexpand-1 unbound
+              (cljr-add-keybindings-with-prefix "C-c C-m"))))
+
 (use-package lsp-mode
   :config
   (add-hook 'cider-mode-hook
