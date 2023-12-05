@@ -88,3 +88,6 @@ source $ZSH/oh-my-zsh.sh
 PATH_TO_NPM_COMPLETION="/usr/bin/../lib/node_modules/npm-completion"
 source $PATH_TO_NPM_COMPLETION/npm-completion.sh
 PATH_TO_NPM_COMPLETION="/home/yenda/.nvm/versions/node/v20.9.0/lib/node_modules/npm-completion"
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

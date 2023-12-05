@@ -118,7 +118,7 @@
 
 (use-package clj-refactor :after cider
   :config
-  (setq cljr-favor-prefix-notation)
+  (setq cljr-favor-prefix-notation nil)
   (add-hook 'cider-mode-hook
             (lambda ()
               (clj-refactor-mode 1)
@@ -556,9 +556,9 @@ targets."
      (toc-org-max-depth . 2)
      (org-list-indent-offset . 1)
      (eval progn
-           (global-display-fill-column-indicator-mode t)
-           (make-variable-buffer-local 'cider-jack-in-nrepl-middlewares)
-           (add-to-list 'cider-jack-in-nrepl-middlewares "shadow.cljs.devtools.server.nrepl/middleware"))
+	   (global-display-fill-column-indicator-mode t)
+	   (make-variable-buffer-local 'cider-jack-in-nrepl-middlewares)
+	   (add-to-list 'cider-jack-in-nrepl-middlewares "shadow.cljs.devtools.server.nrepl/middleware"))
      (cider-ns-refresh-after-fn . "development/restart")))
  '(warning-suppress-types '((comp))))
 (custom-set-faces
