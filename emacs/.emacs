@@ -126,6 +126,10 @@
               ;; This choice of keybinding leaves cider-macroexpand-1 unbound
               (cljr-add-keybindings-with-prefix "C-c C-m"))))
 
+(use-package xref-union
+  :hook
+  cider-connected)
+
 (use-package lsp-mode
   :config
   (add-hook 'cider-mode-hook
@@ -421,7 +425,9 @@ targets."
   :init
   (global-corfu-mode))
 
-(use-package wgrep)
+(use-package wgrep
+  :config
+  (setq wgrep-auto-save-buffer t))
 
 (use-package eat
   :straight (eat :files (:defaults "terminfo"
@@ -511,7 +517,9 @@ targets."
    '("7fd8b914e340283c189980cd1883dbdef67080ad1a3a9cc3df864ca53bdc89cf" default))
  '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'")
  '(safe-local-variable-values
-   '((eval setenv "CLASH_STAGE" "local")
+   '((cider-ns-refresh-after-fn . "development/go")
+     (cider-ns-refresh-before-fn . "development/stop")
+     (eval setenv "CLASH_STAGE" "local")
      (eval setenv "AWS_LOCAL_SQS" "true")
      (eval setenv "AWS_REGION" "eu-west-2")
      (cider-print-options
