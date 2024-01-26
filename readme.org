@@ -1,8 +1,20 @@
-sudo apt-get install --yes pass editorconfig git stow rofi rlwrap libtool-bin i3 silversearcher-ag cmake libc6:i386 libncurses5:i386 libstdc++6:i386 lib32z1 libbz2-1.0:i386 libgtk2.0-dev libc6-dev  libncurses5-dev libpng-dev libtiff5-dev xaw3dg-dev zlib1g-dev libice-dev libsm-dev libx11-dev libxext-dev libxi-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxt-dev libxtst-dev libxv-dev libjpeg-dev libjpeg8-dev libjpeg-turbo8-dev libgif-dev libgnutls28-dev libu2f-udev
+sudo apt-get install --yes pass editorconfig git stow rofi rlwrap libtool-bin i3 silversearcher-ag cmake libc6:i386 libncurses5:i386 libstdc++6:i386 lib32z1 libbz2-1.0:i386 libgtk2.0-dev libc6-dev  libncurses5-dev libpng-dev libtiff5-dev xaw3dg-dev zlib1g-dev libice-dev libsm-dev libx11-dev libxext-dev libxi-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxt-dev libxtst-dev libxv-dev libjpeg-dev libjpeg8-dev libjpeg-turbo8-dev libgif-dev libgnutls28-dev libu2f-udev xclip libgtk2.0-dev ripgrep openjdk-21-jdk
 
-sudo apt-get install qemu qemu-kvm libvirt-daemon bridge-utils virt-manager virtinst ia32-libs-multiarch 
+sudo apt update && sudo apt install -y git libgpg-error-dev libassuan-dev lbzip2 autoconf automake autotools-dev build-essential diffstat gnutls-dev imagemagick libasound2-dev libc6-dev libdatrie-dev libdbus-1-dev libgconf2-dev libgif-dev libgnutls28-dev libgpm-dev libgtk2.0-dev libgtk-3-dev libice-dev libjpeg-dev liblockfile-dev liblqr-1-0 libm17n-dev libmagickwand-dev libncurses5-dev libncurses-dev libotf-dev libpng-dev librsvg2-dev libsm-dev libthai-dev libtiff5-dev libtiff-dev libtinfo-dev libtool  libx11-dev libxext-dev libxi-dev libxml2-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxt-dev libxtst-dev libxv-dev quilt sharutils texinfo xaw3dg xaw3dg-dev xorg-dev xutils-dev zlib1g-dev libjansson-dev libxaw7-dev libselinux1-dev libmagick++-dev libacl1-dev
 
-sudo apt-get install xclip libgtk2.0-dev
+# qemu
+sudo apt-get install qemu qemu-kvm libvirt-daemon bridge-utils virt-manager virtinst
+# emacs
+sudo apt-get install libgccjit-12-dev imagemagick libmagickwand-dev libwebkit2gtk-4.1-dev libjansson-dev
+
+clone this repo
+
+git clone git@github.com:yenda/dotfiles.git
+
+* create gpg key and add it to github
+
+gpg --list-secret-keys --keyid-format LONG
+git config --global user.signingkey YOUR_GPG_KEY_ID
 
 * install dotfiles
 
@@ -14,12 +26,6 @@ cd dotfiles
 
 * generate ssh key and add ssh key to github in chromium
 generate-ssh-key github
-
-Add font source-code-pro
-
-[ -d /usr/share/fonts/opentype ] || sudo mkdir /usr/share/fonts/opentype
-sudo git clone --depth 1 --branch release https://github.com/adobe-fonts/source-code-pro.git /usr/share/fonts/opentype/scp
-sudo fc-cache -f -v
 
 * Build and install emacs
 
@@ -35,11 +41,18 @@ https://www.masteringemacs.org/article/how-to-get-started-tree-sitter
 
 Get the code from the gnu [[http://ftp.gnu.org/gnu/emacs/][forge]]
 
+http://ftp.gnu.org/gnu/emacs/emacs-29.2.tar.gz
+
+git clone git@github.com:tree-sitter/tree-sitter.git
+cd tree-sitter
+make
+sudo make install
+
 #+BEGIN_SRC sh
-  tar -xfv emacs-*
+  tar -xvf emacs-*
   ./autogen.sh    # not needed when installing from tarball
   cd emacs-*
-  sudo apt-get install libgccjit-12-dev imagemagick libmagickwand-dev libwebkit2gtk-4.1-dev libjansson-dev
+  export CC="gcc-12"
   CFLAGS='-march=native -O3' ./configure \
 	--with-modules \
 	--with-xwidgets \
@@ -55,19 +68,7 @@ Get the code from the gnu [[http://ftp.gnu.org/gnu/emacs/][forge]]
 
 #+BEGIN_SRC sh
 # Install deps (these also include emacs deps - sorry)
-sudo apt update && sudo apt install -y git libgpg-error-dev libassuan-dev lbzip2 autoconf automake autotools-dev build-essential diffstat gnutls-dev imagemagick libasound2-dev libc6-dev libdatrie-dev libdbus-1-dev libgconf2-dev libgif-dev libgnutls28-dev libgpm-dev libgtk2.0-dev libgtk-3-dev libice-dev libjpeg-dev liblockfile-dev liblqr-1-0 libm17n-dev libmagickwand-dev libncurses5-dev libncurses-dev libotf-dev libpng-dev librsvg2-dev libsm-dev libthai-dev libtiff5-dev libtiff-dev libtinfo-dev libtool  libx11-dev libxext-dev libxi-dev libxml2-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxt-dev libxtst-dev libxv-dev quilt sharutils texinfo xaw3dg xaw3dg-dev xorg-dev xutils-dev zlib1g-dev libjansson-dev libxaw7-dev libselinux1-dev libmagick++-dev libacl1-dev
 
-# build pinentry-emacs
-cd ~
-wget https://gnupg.org/ftp/gcrypt/pinentry/pinentry-1.1.0.tar.bz2
-tar -xf pinentry-1.1.0.tar.bz2
-cd pinentry-1.1.0
-./configure --enable-pinentry-emacs --enable-inside-emacs
-make
-sudo make install
-cd ~
-rm -rf pinentry-1.1.0 pinentry-1.1.0.tar.bz2
-#+END_SRC
 
 * Install docker
 
@@ -80,7 +81,7 @@ export LSB_ETC_LSB_RELEASE=/etc/upstream-release/lsb-release
 
 V=$(lsb_release -cs)
 
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable"
 
 sudo apt-get update -y
 
@@ -89,13 +90,6 @@ sudo apt-get install -y docker-ce
 ## Add user to docker group. Added user can run docker command without sudo command
 sudo gpasswd -a "${USER}" docker
 ;;sudo usermod -a -G docker $USER
-
-sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-
-sudo chmod +x /usr/local/bin/docker-compose
-
-docker --version
-docker-compose --version
 #+END_SRC
 
 ** test
@@ -108,12 +102,15 @@ docker run hello-world
 * Install clojure
 
 #+BEGIN_SRC sh
-	curl -sLO https://raw.githubusercontent.com/clj-kondo/clj-kondo/master/script/install-clj-kondo
-	chmod +x install-clj-kondo
-	./install-clj-kondo
-
-	$ bash < <(curl -s https://raw.githubusercontent.com/babashka/babashka/master/install)
-
+curl -L -O https://github.com/clojure/brew-install/releases/latest/download/posix-install.sh
+chmod +x posix-install.sh
+sudo ./posix-install.sh
+curl -sLO https://raw.githubusercontent.com/clj-kondo/clj-kondo/master/script/install-clj-kondo
+chmod +x install-clj-kondo
+sudo ./install-clj-kondo
+curl -sLO https://raw.githubusercontent.com/babashka/babashka/master/install
+chmod +x install
+sudo ./install
 #+END_SRC
 
 * Install android studio
@@ -136,37 +133,11 @@ yenda@project2501:~$ /opt/android-studio/bin/studio.sh
 * Install expressvpn
 https://www.expressvpn.com/subscriptions
 
-* Install watchman
-
-#+BEGIN_SRC sh
-git clone https://github.com/facebook/watchman.git
-cd watchman
-git checkout v4.9.0  # the latest stable release
-./autogen.sh
-./configure
-make
-sudo make install
-
-echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_user_watches && echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_queued_events && echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_user_instances && watchman shutdown-server && sudo sysctl -p
-#+END_SRC
-
 * Install nodejs
 
 https://github.com/nodesource/distributions/blob/master/README.md
 
 ** Using Ubuntu
-
-#+BEGIN_SRC sh
-curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-sudo apt-get install -y nodejs
-sudo apt-get install gcc g++ make
-curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-sudo apt-get update && sudo apt-get install yarn
-
-yenda@project2501:~/clash$ sudo npm i -g npm-completion
-yenda@project2501:~/clash$ sudo npm-completion-setup 
-#+END_SRC
 
 * Streamdeck
 

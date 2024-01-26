@@ -1,7 +1,7 @@
 [user]
 	email = yenda1@gmail.com
 	name = Eric Dvorsak
-	signingkey = 28E3756BA1D69C17
+	signingkey = C4C9F7707F77F914
 [commit]
     gpgsign = true
 [github]
